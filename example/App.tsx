@@ -19,10 +19,14 @@ import {
   Button
 } from 'react-native';
 
-import { signMessage } from 'react-native-trust-sdk';
+import TrustWallet from 'react-native-trust-sdk';
+import { MessagePayload } from 'react-native-trust-sdk';
 
 interface Props {}
 export default class App extends Component<Props> {
+
+  wallet: TrustWallet
+  callbackScheem: string = 'trust-rn-example://'
 
   state = {
     address: '0xe47494379c1d48ee73454c251a6395fdd4f9eb43',
@@ -30,15 +34,23 @@ export default class App extends Component<Props> {
     message: 'hello trust'
   }
 
+  componentDidMount() {
+    this.wallet = new TrustWallet();
+  }
+
+  componentWillUnmount() {
+    this.wallet.cleanup();
+  }
+
   signTx() {
     console.log(this.state.address);
   }
 
   signMsg() {
-    signMessage(this.state.message)
-    .then((value) => {
-      Alert.alert('sign message result', value);
-    });
+    console.log(this.state.message);
+    this.wallet.signMessage(new MessagePayload(this.state.message, this.callbackScheem), (result => {
+      Alert.alert('result', result);
+    }));
   }
 
   render() {

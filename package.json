@@ -26,6 +26,9 @@
   },
   "homepage": "https://github.com/TrustWallet/react-native-trust-sdk#readme",
   "devDependencies": {
+    "@types/node": "^10.1.2",
+    "@types/react-native": "^0.55.15",
+    "@types/whatwg-url": "^6.4.0",
     "chai": "^4.1.2",
     "eslint": "^4.19.1",
     "eslint-plugin-mocha": "^5.0.0",
@@ -37,7 +40,8 @@
     "typescript-eslint-parser": "^15.0.0"
   },
   "dependencies": {
-    "@types/react-native": "^0.55.15",
-    "react-native": "^0.55.4"
+    "buffer": "^5.1.0",
+    "react-native": "^0.55.4",
+    "whatwg-url": "^6.4.1"
   }
 }
