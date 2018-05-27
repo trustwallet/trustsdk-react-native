@@ -48,7 +48,7 @@ export default class App extends Component<Props> {
     console.log('data: ' + this.state.data);
     var payload = new TransactionPayload(this.state.address, this.state.amount, this.callbackScheem, this.state.data);
     this.wallet.signTransaction(payload, (result) => {
-      Alert.alert('result', result);
+      Alert.alert('Transaction Signed', result);
     });
   }
 
@@ -56,7 +56,7 @@ export default class App extends Component<Props> {
     console.log(this.state.message);
     const payload = new MessagePayload(this.state.message, this.callbackScheem);
     this.wallet.signMessage(payload, (result => {
-      Alert.alert('result', result);
+      Alert.alert('Message Signed', result);
     }));
   }
 
