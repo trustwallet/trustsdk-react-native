@@ -1,6 +1,5 @@
 import {Buffer} from 'buffer';
 global.Buffer = Buffer;
-
 import {URL, URLSearchParams} from 'whatwg-url';
 
 export enum TrustCommand {
@@ -11,8 +10,9 @@ export enum TrustCommand {
 export namespace TrustCommand {
   export function parseURL(urlString: string): {id: string, result: string} {
     const url = new URL(urlString);
-    const result = url.searchParams.get('result') || '';
     const id = url.searchParams.get('id') || '';
+    let result = url.searchParams.get('result') || '';
+    result = result.replace(/ /g, '+');
     return {
       'id': id,
       'result': Buffer.from(result, 'base64').toString('hex')
@@ -21,10 +21,10 @@ export namespace TrustCommand {
   export function getURL(command: TrustCommand, data: Payload, scheme: string = 'trust://'): string {
     switch(command) {
         case TrustCommand.signMessage:
-            let msgUrl = new URL(scheme + TrustCommand.signMessage + '?' + data.toQuery());
+            var msgUrl = new URL(scheme + TrustCommand.signMessage + '?' + data.toQuery());
             return msgUrl.toString();
         case TrustCommand.signTransaction:
-            let txUrl = new URL(scheme + TrustCommand.signTransaction + '?' + data.toQuery());
+            var txUrl = new URL(scheme + TrustCommand.signTransaction + '?' + data.toQuery());
             return txUrl.toString();
     }
   }
@@ -48,7 +48,7 @@ export class MessagePayload implements Payload {
     }
 
     toQuery(): string {
-        var searchParams = new URLSearchParams({});
+        const searchParams = new URLSearchParams({});
         searchParams.append('message', this.message);
         if(this.address.length > 0) {
           searchParams.append('address', this.address);
@@ -66,25 +66,31 @@ export class TransactionPayload implements Payload {
     to: string
     amount: string
     nonce: string
+    data: string
     callbackScheme: string
 
-    constructor(to: string, amount: string, callbackScheme: string, gasPrice?: string, gasLimit?: string, nonce?: string) {
+    constructor(to: string, amount: string, callbackScheme: string, data?: string, gasPrice?: string, gasLimit?: string, nonce?: string) {
       this.to = to;
       this.amount = amount;
       this.callbackScheme = callbackScheme;
       this.gasPrice = gasPrice || '21';
       this.gasLimit = gasLimit || '21000';
       this.nonce = nonce || '0';
+      this.data = data || '';
     }
 
     toQuery(): string {
-        var searchParams = new URLSearchParams({});
+        const searchParams = new URLSearchParams({});
         searchParams.append('gasPrice', this.gasPrice);
-        searchParams.append('gasLimit', this.gasPrice);
+        searchParams.append('gasLimit', this.gasLimit);
         searchParams.append('to', this.to);
         searchParams.append('amount', this.amount);
+        if (this.data.length > 0) {
+          searchParams.append('data', this.data);
+        }
         searchParams.append('nonce', this.nonce);
-        searchParams.append('callback', this.callbackScheme);
+        const callbackUrl = this.callbackScheme + TrustCommand.signTransaction + '?id=' + this.id;
+        searchParams.append('callback', callbackUrl);
         return searchParams.toString();
     }
 }

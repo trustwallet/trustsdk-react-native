@@ -40,8 +40,8 @@
     "typescript-eslint-parser": "^15.0.0"
   },
   "dependencies": {
-    "buffer": "^5.1.0",
     "react-native": "^0.55.4",
+    "safe-buffer": "^5.1.2",
     "whatwg-url": "^6.4.1"
   }
 }

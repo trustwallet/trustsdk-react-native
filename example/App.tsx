@@ -19,8 +19,7 @@ import {
   Button
 } from 'react-native';
 
-import TrustWallet from 'react-native-trust-sdk';
-import { MessagePayload } from 'react-native-trust-sdk';
+import TrustWallet, { MessagePayload, TransactionPayload } from 'react-native-trust-sdk';
 
 interface Props {}
 export default class App extends Component<Props> {
@@ -29,9 +28,10 @@ export default class App extends Component<Props> {
   callbackScheem: string = 'trust-rn-example://'
 
   state = {
-    address: '0xe47494379c1d48ee73454c251a6395fdd4f9eb43',
+    address: '0xE47494379c1d48ee73454C251A6395FDd4F9eb43',//FIXME eip55
     amount: '1',
-    message: 'hello trust'
+    message: 'hello trust',
+    data: '0x8f834227000000000000000000000000000000005224'
   }
 
   componentDidMount() {
@@ -43,12 +43,19 @@ export default class App extends Component<Props> {
   }
 
   signTx() {
-    console.log(this.state.address);
+    console.log('to: ' + this.state.address);
+    console.log('amount: ' + this.state.amount);
+    console.log('data: ' + this.state.data);
+    var payload = new TransactionPayload(this.state.address, this.state.amount, this.callbackScheem, this.state.data);
+    this.wallet.signTransaction(payload, (result) => {
+      Alert.alert('result', result);
+    });
   }
 
   signMsg() {
     console.log(this.state.message);
-    this.wallet.signMessage(new MessagePayload(this.state.message, this.callbackScheem), (result => {
+    const payload = new MessagePayload(this.state.message, this.callbackScheem);
+    this.wallet.signMessage(payload, (result => {
       Alert.alert('result', result);
     }));
   }
@@ -64,13 +71,19 @@ export default class App extends Component<Props> {
             <Text style={styles.label}>
               Address:
             </Text>
-            <TextInput style={styles.input} value={this.state.address} />
+            <TextInput style={styles.input} value={this.state.address} onChangeText={(address) => this.setState({address})}/>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>
+              Data:
+            </Text>
+            <TextInput style={styles.input} value={this.state.data} onChangeText={(data) => this.setState({data})}/>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>
               Amount:
             </Text>
-            <TextInput style={styles.input} value={this.state.amount} />
+            <TextInput style={styles.input} value={this.state.amount} onChangeText={(amount) => this.setState({amount})}/>
           </View>
           <Button title='Sign Transaction' onPress={this.signTx.bind(this)} />
         </View>
@@ -79,7 +92,7 @@ export default class App extends Component<Props> {
             <Text style={styles.label}>
               Message:
             </Text>
-            <TextInput style={styles.input} value={this.state.message} />
+            <TextInput style={styles.input} value={this.state.message} onChangeText={(message) => this.setState({message})}/>
           </View>
           <Button title='Sign Message' onPress={this.signMsg.bind(this)} />
         </View>

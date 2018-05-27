@@ -1,6 +1,6 @@
 import {Linking} from 'react-native';
 import {URL} from 'whatwg-url';
-import {TrustCommand, MessagePayload, TransactionPayload} from './lib/commands';
+import {TrustCommand, Payload, MessagePayload, TransactionPayload} from './lib/commands';
 
 class TrustWallet {
   apps = [{
@@ -13,8 +13,13 @@ class TrustWallet {
 
   constructor() {
     // Linking.getInitialURL().then((url: string) => this.handleURL(url));
+    this.start();
+  }
+
+  public start() {
     Linking.addEventListener('url', this.handleOpenURL.bind(this));
   }
+
   public cleanup() {
     Linking.removeEventListener('url', this.handleOpenURL.bind(this));
     this.callbacks = {};
@@ -26,25 +31,23 @@ class TrustWallet {
   }
 
   public signTransaction(payload: TransactionPayload, callback: (value?: string | undefined) => void) {
-    if (!this.installed()) {
-      callback('');
-    }
-    this.callbacks[payload.id] = callback;
-    const url = TrustCommand.getURL(TrustCommand.signTransaction, payload);
-    Linking.openURL(url);
+    return this.runCommand(TrustCommand.signTransaction, payload, callback);
   }
 
   public signMessage(payload: MessagePayload, callback: (value?: string | undefined) => void) {
+    return this.runCommand(TrustCommand.signMessage, payload, callback);
+  }
+
+  private runCommand(command: TrustCommand, payload: Payload, callback: (value?: string | undefined) => void) {
     if (!this.installed()) {
-      callback('');
+      callback();
     }
     this.callbacks[payload.id] = callback;
-    const url = TrustCommand.getURL(TrustCommand.signMessage, payload);
+    const url = TrustCommand.getURL(command, payload);
     Linking.openURL(url);
   }
 
   private handleOpenURL(event: { url: string; }) {
-    console.log(event);
     const response = TrustCommand.parseURL(event.url);
     const callback = this.callbacks[response.id];
     if (callback) {
