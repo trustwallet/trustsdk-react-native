@@ -3,37 +3,61 @@ import {URL} from 'whatwg-url';
 import {TrustCommand, Payload, MessagePayload, TransactionPayload} from './lib/commands';
 
 class TrustWallet {
+  callbackScheme: string
   apps = [{
     name: 'Trust',
     scheme: 'trust://',
     installURL: 'https://itunes.apple.com/ru/app/trust-ethereum-wallet/id1288339409'
   }]
-
   callbacks: {[key: string]: (value?: string | undefined) => void}= {}
 
-  constructor() {
+  /**
+   * constructor
+   * @param callbackScheme default callback scheme
+   */
+  constructor(callbackScheme: string) {
     // Linking.getInitialURL().then((url: string) => this.handleURL(url));
+    this.callbackScheme = callbackScheme
     this.start();
   }
 
+  /**
+   * start listening openURL event
+   */
   public start() {
     Linking.addEventListener('url', this.handleOpenURL.bind(this));
   }
 
+  /**
+   * clean callbacks and stop listening openURL event
+   */
   public cleanup() {
     Linking.removeEventListener('url', this.handleOpenURL.bind(this));
     this.callbacks = {};
   }
 
+  /**
+   * check if Trust Wallet is installed
+   */
   public installed(): boolean {
     const installed = this.apps.filter((app) => Linking.canOpenURL(app.scheme + ''));
     return installed.length > 0;
   }
 
+  /**
+   * sign a transaction
+   * @param payload transaction payload
+   * @param callback callback handler
+   */
   public signTransaction(payload: TransactionPayload, callback: (value?: string | undefined) => void) {
     return this.runCommand(TrustCommand.signTransaction, payload, callback);
   }
 
+  /**
+   * sign a message
+   * @param payload message payload
+   * @param callback callback handler
+   */
   public signMessage(payload: MessagePayload, callback: (value?: string | undefined) => void) {
     return this.runCommand(TrustCommand.signMessage, payload, callback);
   }
@@ -42,6 +66,11 @@ class TrustWallet {
     if (!this.installed()) {
       callback();
     }
+    if (payload.callbackScheme.length <= 0) {
+      // set default callback scheme
+      payload.callbackScheme = this.callbackScheme;
+    }
+    // tracking callback handlers by payload id
     this.callbacks[payload.id] = callback;
     const url = TrustCommand.getURL(command, payload);
     Linking.openURL(url);

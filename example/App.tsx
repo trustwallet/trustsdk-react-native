@@ -25,7 +25,7 @@ interface Props {}
 export default class App extends Component<Props> {
 
   wallet: TrustWallet
-  callbackScheem: string = 'trust-rn-example://'
+  callbackScheme: string = 'trust-rn-example://'
 
   state = {
     address: '0xE47494379c1d48ee73454C251A6395FDd4F9eb43',//FIXME eip55
@@ -35,7 +35,7 @@ export default class App extends Component<Props> {
   }
 
   componentDidMount() {
-    this.wallet = new TrustWallet();
+    this.wallet = new TrustWallet(this.callbackScheme);
   }
 
   componentWillUnmount() {
@@ -46,7 +46,7 @@ export default class App extends Component<Props> {
     console.log('to: ' + this.state.address);
     console.log('amount: ' + this.state.amount);
     console.log('data: ' + this.state.data);
-    var payload = new TransactionPayload(this.state.address, this.state.amount, this.callbackScheem, this.state.data);
+    var payload = new TransactionPayload(this.state.address, this.state.amount, this.state.data);
     this.wallet.signTransaction(payload, (result) => {
       Alert.alert('Transaction Signed', result);
     });
@@ -54,7 +54,7 @@ export default class App extends Component<Props> {
 
   signMsg() {
     console.log(this.state.message);
-    const payload = new MessagePayload(this.state.message, this.callbackScheem);
+    const payload = new MessagePayload(this.state.message);
     this.wallet.signMessage(payload, (result => {
       Alert.alert('Message Signed', result);
     }));
