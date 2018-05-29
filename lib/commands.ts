@@ -1,10 +1,12 @@
 import {Buffer} from 'buffer';
 global.Buffer = Buffer;
-import {URL, URLSearchParams} from 'whatwg-url';
+import URL from 'url-parse';
 
 export enum TrustCommand {
   // sign a message
   signMessage = 'sign-message',
+  // sign a personal message
+  signPersonalMessage = 'sign-personal-message',
   // sign a transaction
   signTransaction = 'sign-transaction'
 }
@@ -22,9 +24,9 @@ export namespace TrustCommand {
    * @returns {Result} parsed result
    */
   export function parseURL(urlString: string): {id: string, result: string} {
-    const url = new URL(urlString);
-    const id = url.searchParams.get('id') || '';
-    let result = url.searchParams.get('result') || '';
+    const url = URL(urlString, null, true);
+    const id = url.query.id || '';
+    let result = url.query.result || '';
     result = result.replace(/ /g, '+');
     return {
       'id': id,
@@ -38,15 +40,9 @@ export namespace TrustCommand {
    * @param data concrete command payload
    * @param scheme target wallet scheme default: trust://
    */
-  export function getURL(command: TrustCommand, data: Payload, scheme: string = 'trust://'): string {
-    switch(command) {
-        case TrustCommand.signMessage:
-            var msgUrl = new URL(scheme + TrustCommand.signMessage + '?' + data.toQuery());
-            return msgUrl.toString();
-        case TrustCommand.signTransaction:
-            var txUrl = new URL(scheme + TrustCommand.signTransaction + '?' + data.toQuery());
-            return txUrl.toString();
-    }
+  export function getURL(data: Payload, scheme: string = 'trust://'): string {
+    var msgUrl = URL(scheme + data.type + '?' + data.toQuery());
+    return msgUrl.toString();
   }
 }
 
@@ -56,6 +52,8 @@ export namespace TrustCommand {
 export interface Payload {
   // payload bookkeeping id
   id: string
+  // payload type
+  type: TrustCommand
   // scheme for Trust calls back
   callbackScheme: string
   // convert to query string
@@ -63,13 +61,14 @@ export interface Payload {
 }
 
 /**
- * MessagePayload for TrustCommand.signMessage
+ * MessagePayload for TrustCommand.signMessage|.signPersonalMessage
  */
 export class MessagePayload implements Payload {
   id: string
   message: string
   address: string
   callbackScheme: string
+  type: TrustCommand = TrustCommand.signMessage
 
   /**
    * constructor
@@ -85,16 +84,18 @@ export class MessagePayload implements Payload {
   }
 
   toQuery(): string {
-    const searchParams = new URLSearchParams({});
-    searchParams.append('message', this.message);
+    var array = [];
+    array.push({k: 'message', v: this.message});
     if(this.address.length > 0) {
-      searchParams.append('address', this.address);
+      array.push({k: 'address', v: this.address});
     }
     if(this.callbackScheme.length > 0) {
-      const callbackUrl = this.callbackScheme + TrustCommand.signMessage + '?id=' + this.id;
-      searchParams.append('callback', callbackUrl);
+      const callbackUrl = this.callbackScheme + this.type + '?id=' + this.id;
+      array.push({k: 'callback', v: callbackUrl});
     }
-    return searchParams.toString();
+    return array.map((pair) => {
+      return pair.k + '=' + encodeURIComponent(pair.v);
+    }).join('&');
   }
 }
 
@@ -110,6 +111,7 @@ export class TransactionPayload implements Payload {
   nonce: string
   data: string
   callbackScheme: string
+  type: TrustCommand = TrustCommand.signTransaction
 
   /**
    * constructor
@@ -133,19 +135,21 @@ export class TransactionPayload implements Payload {
   }
 
   toQuery(): string {
-    const searchParams = new URLSearchParams({});
-    searchParams.append('to', this.to);
-    searchParams.append('amount', this.amount);
-    searchParams.append('gasPrice', this.gasPrice);
-    searchParams.append('gasLimit', this.gasLimit);
-    if (this.data.length > 0) {
-      searchParams.append('data', this.data);
+    var array = [];
+    array.push({k: 'to', v: this.to});
+    array.push({k: 'amount', v: this.amount});
+    array.push({k: 'gasPrice', v: this.gasPrice});
+    array.push({k: 'gasLimit', v: this.gasLimit});
+    if(this.data.length > 0) {
+      array.push({k: 'data', v: this.data});
     }
-    searchParams.append('nonce', this.nonce);
-    if (this.callbackScheme.length > 0) {
+    array.push({k: 'nonce', v: this.nonce});
+    if(this.callbackScheme.length > 0) {
       const callbackUrl = this.callbackScheme + TrustCommand.signTransaction + '?id=' + this.id;
-      searchParams.append('callback', callbackUrl);
+      array.push({k: 'callback', v: callbackUrl});
     }
-    return searchParams.toString();
+    return array.map((pair) => {
+      return pair.k + '=' + encodeURIComponent(pair.v);
+    }).join('&');
   }
 }

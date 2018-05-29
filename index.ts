@@ -50,7 +50,7 @@ class TrustWallet {
    * @param callback callback handler
    */
   public signTransaction(payload: TransactionPayload, callback: (value?: string | undefined) => void) {
-    return this.runCommand(TrustCommand.signTransaction, payload, callback);
+    return this.runCommand(payload, callback);
   }
 
   /**
@@ -59,10 +59,22 @@ class TrustWallet {
    * @param callback callback handler
    */
   public signMessage(payload: MessagePayload, callback: (value?: string | undefined) => void) {
-    return this.runCommand(TrustCommand.signMessage, payload, callback);
+    return this.runCommand(payload, callback);
   }
 
-  private runCommand(command: TrustCommand, payload: Payload, callback: (value?: string | undefined) => void) {
+  /**
+   * sign a personal message
+   * @param payload message payload
+   * @param callback callback handler
+   */
+  public signPersonalMessage(payload: MessagePayload, callback: (value?: string | undefined) => void) {
+    if(payload.type !== TrustCommand.signPersonalMessage) {
+      payload.type = TrustCommand.signPersonalMessage;
+    }
+    return this.runCommand(payload, callback);
+  }
+
+  private runCommand(payload: Payload, callback: (value?: string | undefined) => void) {
     if (!this.installed()) {
       callback();
     }
@@ -72,7 +84,7 @@ class TrustWallet {
     }
     // tracking callback handlers by payload id
     this.callbacks[payload.id] = callback;
-    const url = TrustCommand.getURL(command, payload);
+    const url = TrustCommand.getURL(payload);
     Linking.openURL(url);
   }
 

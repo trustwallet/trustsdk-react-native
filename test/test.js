@@ -11,6 +11,10 @@ describe('TrustCommand tests', () => {
       expect(TrustCommand.signMessage).to.equal('sign-message');
     });
 
+    it('.signPersonalMessage should equal to sign-personal-message', () => {
+      expect(TrustCommand.signPersonalMessage).to.equal('sign-personal-message');
+    });
+
     it('.signTransaction should equal to sign-transaction', () => {
       expect(TrustCommand.signTransaction).to.equal('sign-transaction');
     });
@@ -20,15 +24,23 @@ describe('TrustCommand tests', () => {
     it('get url for .signMessage', () => {
       var payload = new MessagePayload('hey trust', '', TestCallbackScheme);
       payload.id = 'msg';
-      var url = TrustCommand.getURL(TrustCommand.signMessage, payload);
+      var url = TrustCommand.getURL(payload);
       expect(url).to.equal('trust://sign-message?message=aGV5IHRydXN0&callback=trust-rn-example%3A%2F%2Fsign-message%3Fid%3Dmsg');
+    });
+
+    it('get url for .signPersonalMessage', () => {
+      var payload = new MessagePayload('hey trust', '', TestCallbackScheme);
+      payload.type = TrustCommand.signPersonalMessage;
+      payload.id = 'msg';
+      var url = TrustCommand.getURL(payload);
+      expect(url).to.equal('trust://sign-personal-message?message=aGV5IHRydXN0&callback=trust-rn-example%3A%2F%2Fsign-personal-message%3Fid%3Dmsg');
     });
 
     it('get url for .signTransaction', () => {
       var payload = new TransactionPayload(ToAddress, '1', '8f834227000000000000000000000000000000005224');
       payload.id = 'tx';
       payload.callbackScheme = TestCallbackScheme;
-      var url = TrustCommand.getURL(TrustCommand.signTransaction, payload);
+      var url = TrustCommand.getURL(payload);
       expect(url).to.equal('trust://sign-transaction?to=0xE47494379c1d48ee73454C251A6395FDd4F9eb43&amount=1&gasPrice=21&gasLimit=21000&data=8f834227000000000000000000000000000000005224&nonce=0&callback=trust-rn-example%3A%2F%2Fsign-transaction%3Fid%3Dtx');
     });
   });
@@ -36,6 +48,12 @@ describe('TrustCommand tests', () => {
   describe('Test TrustCommand.parseResult()', () => {
     it('parse result for .signMessage', () => {
       var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1527509558565&result=XkKQfY3KAYXgQdBhEUaegGhQagNYxIT8XCcr3CJnzNJPNYKlh0LP9vemwXTV+qD3ZFExEzjptmpAajp4q8f9Yxs%3D');
+      expect(result.id).to.equal('msg_1527509558565');
+      expect(result.result).to.equal('5e42907d8dca0185e041d06111469e8068506a0358c484fc5c272bdc2267ccd24f3582a58742cff6f7a6c174d5faa0f76451311338e9b66a406a3a78abc7fd631b');
+    });
+
+    it('parse result for .signPersonalMessage', () => {
+      var result = TrustCommand.parseURL('trust-rn-example://sign-personal-message?id=msg_1527509558565&result=XkKQfY3KAYXgQdBhEUaegGhQagNYxIT8XCcr3CJnzNJPNYKlh0LP9vemwXTV+qD3ZFExEzjptmpAajp4q8f9Yxs%3D');
       expect(result.id).to.equal('msg_1527509558565');
       expect(result.result).to.equal('5e42907d8dca0185e041d06111469e8068506a0358c484fc5c272bdc2267ccd24f3582a58742cff6f7a6c174d5faa0f76451311338e9b66a406a3a78abc7fd631b');
     });
