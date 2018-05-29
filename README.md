@@ -1,4 +1,5 @@
 # react-native-trust-sdk
+[![Build Status](https://travis-ci.org/TrustWallet/react-native-trust-sdk.svg?branch=master)](https://travis-ci.org/TrustWallet/react-native-trust-sdk)
 
 The react-native-trust-sdk lets you sign Ethereum transactions and messages with Trust Wallet so that you can bulid a react native DApp without having to worry about keys or wallets.
 
