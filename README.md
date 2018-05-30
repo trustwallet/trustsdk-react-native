@@ -22,7 +22,7 @@ npm i react-native-trust-sdk
 
 > Trust Android is not ready yet.
 
-Make sure you have set up intent-filter for your app [(https://developer.android.com/training/app-links/deep-linking#adding-filters)
+Make sure you have set up intent-filter for your app ([documentation here](https://developer.android.com/training/app-links/deep-linking#adding-filters))
 
 ## Configuring iOS
 
@@ -51,12 +51,12 @@ Make sure you have set up url scheme for your app (Open Xcode an click on your p
 
 ## Example
 
-you need to build the package first:
-```shell
-npm install && npm run build
-```
-
 Checkout the example typescript project in `example` folder.
+
+```shell
+npm install && npm start
+react-native run-ios
+```
 
 ![demo gif](doc/demo.gif)
 
@@ -69,7 +69,7 @@ import TrustWallet, { MessagePayload, TransactionPayload } from 'react-native-tr
 
 initialize an instance, e.g. in `componentDidMount`:
 ```typescript
-const wallet = new TrustWallet('<your_app_scheme>');
+const wallet = new TrustWallet('<your_app_scheme>://');
 ```
 
 sign a message:
