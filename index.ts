@@ -1,5 +1,4 @@
 import {Linking} from 'react-native';
-import {URL} from 'whatwg-url';
 import {TrustCommand, Payload, MessagePayload, TransactionPayload} from './lib/commands';
 
 class TrustWallet {

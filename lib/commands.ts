@@ -24,7 +24,7 @@ export namespace TrustCommand {
    * @returns {Result} parsed result
    */
   export function parseURL(urlString: string): {id: string, result: string} {
-    const url = URL(urlString, null, true);
+    const url = URL(urlString, '', true);
     const id = url.query.id || '';
     let result = url.query.result || '';
     result = result.replace(/ /g, '+');
