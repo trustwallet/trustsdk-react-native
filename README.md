@@ -14,7 +14,7 @@ The react-native-trust-sdk lets you sign Ethereum transactions and messages with
 ## Installation
 
 ```shell
-#TBD
+npm i react-native-trust-sdk
 ```
 
 ## Configuring Android

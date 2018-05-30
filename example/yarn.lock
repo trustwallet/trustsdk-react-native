@@ -4253,14 +4253,13 @@ react-is@^16.3.1:
   version "16.4.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.0.tgz#cc9fdc855ac34d2e7d9d2eb7059bbc240d35ffcf"
 
-react-native-trust-sdk@./lib:
+react-native-trust-sdk@0.0.1:
   version "0.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-trust-sdk/-/react-native-trust-sdk-0.0.1.tgz#ee9b17aef897f909a52943676b9636579380d0f6"
   dependencies:
     buffer "^5.1.0"
     react-native "^0.55.4"
-    safe-buffer "^5.1.2"
     url-parse "^1.4.0"
-    whatwg-url "^6.4.1"
 
 react-native-typescript-transformer@1.2.6:
   version "1.2.6"
