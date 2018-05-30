@@ -19,7 +19,9 @@ The react-native-trust-sdk lets you sign Ethereum transactions and messages with
 
 ## Configuring Android
 
-TBD
+> Trust Android is not ready yet.
+
+Make sure you have set up intent-filter for your app [(https://developer.android.com/training/app-links/deep-linking#adding-filters)
 
 ## Configuring iOS
 
@@ -54,6 +56,8 @@ npm install && npm run build
 ```
 
 Checkout the example typescript project in `example` folder.
+
+![demo gif](doc/demo.gif)
 
 ## Usage
 
