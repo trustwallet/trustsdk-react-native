@@ -47,17 +47,24 @@ export default class App extends Component<Props> {
     console.log('amount: ' + this.state.amount);
     console.log('data: ' + this.state.data);
     var payload = new TransactionPayload(this.state.address, this.state.amount, this.state.data);
-    this.wallet.signTransaction(payload, (result) => {
+    this.wallet.signTransaction(payload)
+    .then((result) => {
       Alert.alert('Transaction Signed', result);
+    })
+    .catch((error) => {
+      Alert.alert('Error', error);
     });
   }
 
   signMsg() {
     console.log(this.state.message);
     const payload = new MessagePayload(this.state.message);
-    this.wallet.signMessage(payload, (result => {
+    this.wallet.signMessage(payload)
+    .then((result) => {
       Alert.alert('Message Signed', result);
-    }));
+    }).catch((error) => {
+      Alert.alert('Error', error);
+    });
   }
 
   render() {

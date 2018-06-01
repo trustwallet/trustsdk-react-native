@@ -3,12 +3,12 @@ import {TrustCommand, Payload, MessagePayload, TransactionPayload} from './lib/c
 
 class TrustWallet {
   callbackScheme: string
-  apps = [{
+  app = {
     name: 'Trust',
     scheme: 'trust://',
     installURL: 'https://itunes.apple.com/ru/app/trust-ethereum-wallet/id1288339409'
-  }]
-  callbacks: {[key: string]: (value?: string | undefined) => void}= {}
+  }
+  resolvers: {[key: string]: (value: string) => void}= {}
 
   /**
    * constructor
@@ -32,67 +32,72 @@ class TrustWallet {
    */
   public cleanup() {
     Linking.removeEventListener('url', this.handleOpenURL.bind(this));
-    this.callbacks = {};
+    this.resolvers = {};
   }
 
   /**
    * check if Trust Wallet is installed
    */
-  public installed(): boolean {
-    const installed = this.apps.filter((app) => Linking.canOpenURL(app.scheme + ''));
-    return installed.length > 0;
+  public installed(): Promise<boolean> {
+    return Linking.canOpenURL(this.app.scheme);
   }
 
   /**
    * sign a transaction
    * @param payload transaction payload
-   * @param callback callback handler
+   * @returns {Promise<string>} signed transaction hash
    */
-  public signTransaction(payload: TransactionPayload, callback: (value?: string | undefined) => void) {
-    return this.runCommand(payload, callback);
+  public signTransaction(payload: TransactionPayload): Promise<string> {
+    return this.runCommand(payload);
   }
 
   /**
    * sign a message
    * @param payload message payload
-   * @param callback callback handler
+   * @returns {Promise<string>} signed message hash
    */
-  public signMessage(payload: MessagePayload, callback: (value?: string | undefined) => void) {
-    return this.runCommand(payload, callback);
+  public signMessage(payload: MessagePayload): Promise<string> {
+    return this.runCommand(payload)
   }
 
   /**
    * sign a personal message
    * @param payload message payload
-   * @param callback callback handler
+   * @returns {Promise<string>} signed personal message hash
    */
-  public signPersonalMessage(payload: MessagePayload, callback: (value?: string | undefined) => void) {
+  public signPersonalMessage(payload: MessagePayload): Promise<string> {
     if(payload.type !== TrustCommand.signPersonalMessage) {
       payload.type = TrustCommand.signPersonalMessage;
     }
-    return this.runCommand(payload, callback);
+    return this.runCommand(payload);
   }
 
-  private runCommand(payload: Payload, callback: (value?: string | undefined) => void) {
-    if (!this.installed()) {
-      callback();
-    }
-    if (payload.callbackScheme.length <= 0) {
-      // set default callback scheme
-      payload.callbackScheme = this.callbackScheme;
-    }
-    // tracking callback handlers by payload id
-    this.callbacks[payload.id] = callback;
-    const url = TrustCommand.getURL(payload);
-    Linking.openURL(url);
+  private runCommand(payload: Payload): Promise<string> {
+    return this.installed()
+    .then((result) => {
+      return new Promise<string>((resolve, reject) => {
+        if (result) {
+          if (payload.callbackScheme.length <= 0) {
+            // set default callback scheme
+            payload.callbackScheme = this.callbackScheme;
+          }
+          // tracking resolve by payload id
+          this.resolvers[payload.id] = resolve;
+          const url = TrustCommand.getURL(payload);
+          Linking.openURL(url);
+        } else {
+          reject('Trust not installed');
+        }
+      });
+    });
   }
 
   private handleOpenURL(event: { url: string; }) {
     const response = TrustCommand.parseURL(event.url);
-    const callback = this.callbacks[response.id];
-    if (callback) {
-      callback(response.result);
-      delete this.callbacks[response.id];
+    const resolve = this.resolvers[response.id];
+    if (resolve) {
+      resolve(response.result);
+      delete this.resolvers[response.id];
     }
   }
 }

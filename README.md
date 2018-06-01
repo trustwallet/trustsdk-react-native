@@ -1,4 +1,5 @@
 # react-native-trust-sdk
+
 [![Build Status](https://travis-ci.org/TrustWallet/react-native-trust-sdk.svg?branch=master)](https://travis-ci.org/TrustWallet/react-native-trust-sdk)
 [![npm version](https://badge.fury.io/js/react-native-trust-sdk.svg)](https://badge.fury.io/js/react-native-trust-sdk)
 
@@ -63,32 +64,45 @@ react-native run-ios
 ## Usage
 
 import the package:
+
 ```typescript
 import TrustWallet, { MessagePayload, TransactionPayload } from 'react-native-trust-sdk';
 ```
 
 initialize an instance, e.g. in `componentDidMount`:
+
 ```typescript
 const wallet = new TrustWallet('<your_app_scheme>://');
 ```
 
 sign a message:
+
 ```typescript
 const payload = new MessagePayload('hello trust');
-wallet.signMessage(payload, (result => {
-    console.log('Message Signed', result);
-}));
+wallet.signMessage(payload)
+    .then((result) => {
+      console.log('Message Signed', result);
+    }).catch((error) => {
+      console.log('Error', error);
+    });
 ```
 
 sign a transaction:
+
 ```typescript
 var payload = new TransactionPayload('<address>', '<amount>', '<data>');
-wallet.signTransaction(payload, (result) => {
-    console.log('Transaction Signed', result);
+wallet.signTransaction(payload)
+    .then((result) => {
+      console.log('Transaction Signed', result);
+    })
+    .catch((error) => {
+      console.log('Error', error);
+    });
 });
 ```
 
-clean up all callback handlers, e.g. in`componentWillUnmount`:
+clean up all resolve handlers, e.g. in`componentWillUnmount`:
+
 ```typescript
 wallet.cleanup();
 ```
