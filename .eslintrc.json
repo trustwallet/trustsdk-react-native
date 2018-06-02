@@ -17,6 +17,7 @@
   "env": {
     "es6": true,
     "mocha": true,
+    "jest": true,
     "react-native/react-native": true
   },
   "rules": {
