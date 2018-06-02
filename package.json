@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "./build.sh",
-    "test": "mocha --reporter spec",
+    "test": "jest --coverage",
     "lint": "eslint ."
   },
   "repository": {
@@ -29,20 +29,39 @@
     "@types/node": "^10.1.2",
     "@types/react-native": "^0.55.15",
     "@types/url-parse": "^1.1.0",
-    "react-native": "^0.55.4",
-    "chai": "^4.1.2",
+    "coveralls": "^3.0.1",
     "eslint": "^4.19.1",
-    "eslint-plugin-mocha": "^5.0.0",
     "eslint-plugin-react": "^7.8.2",
     "eslint-plugin-react-native": "^3.2.1",
     "eslint-plugin-typescript": "^0.12.0",
-    "mocha": "^5.2.0",
+    "istanbul": "^0.4.5",
+    "jest": "^23.1.0",
+    "react-native": "^0.55.4",
+    "ts-jest": "^22.4.6",
     "typescript": "^2.8.3",
     "typescript-eslint-parser": "^15.0.0"
   },
   "dependencies": {
     "buffer": "^5.1.0",
     "url-parse": "^1.4.0"
+  },
+  "jest": {
+    "preset": "react-native",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "modulePaths": [
+      "<rootDir>"
+    ]
   },
   "files": [
     "dist"

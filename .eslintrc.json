@@ -2,8 +2,7 @@
   "plugins": [
     "react",
     "react-native",
-    "typescript",
-    "mocha"
+    "typescript"
   ],
   "extends": ["eslint:recommended", "plugin:react/recommended"],
   "parser": "typescript-eslint-parser",
@@ -16,7 +15,7 @@
   },
   "env": {
     "es6": true,
-    "mocha": true,
+    "jest": true,
     "react-native/react-native": true
   },
   "rules": {
