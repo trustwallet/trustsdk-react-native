@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/TrustWallet/react-native-trust-sdk.svg?branch=master)](https://travis-ci.org/TrustWallet/react-native-trust-sdk)
 [![npm version](https://badge.fury.io/js/react-native-trust-sdk.svg)](https://badge.fury.io/js/react-native-trust-sdk)
+[![Coverage Status](https://coveralls.io/repos/github/TrustWallet/react-native-trust-sdk/badge.svg?branch=master)](https://coveralls.io/github/TrustWallet/react-native-trust-sdk?branch=master)
 
 The react-native-trust-sdk lets you sign Ethereum transactions and messages with Trust Wallet so that you can bulid a react native DApp without having to worry about keys or wallets.
 
