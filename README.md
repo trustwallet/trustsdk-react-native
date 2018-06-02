@@ -91,7 +91,7 @@ wallet.signMessage(payload)
 sign a transaction:
 
 ```typescript
-var payload = new TransactionPayload('<address>', '<amount>', '<data>');
+const payload = new TransactionPayload('<address>', '<amount>', '<data>');
 wallet.signTransaction(payload)
     .then((result) => {
       console.log('Transaction Signed', result);
