@@ -8,7 +8,7 @@ class TrustWallet {
     scheme: 'trust://',
     installURL: 'https://itunes.apple.com/ru/app/trust-ethereum-wallet/id1288339409'
   }
-  resolvers: {[key: string]: (value: string) => void}= {}
+  resolvers: {[key: string]: {[key: string]: (value: string) => void}}= {}
 
   /**
    * constructor
@@ -21,14 +21,14 @@ class TrustWallet {
   }
 
   /**
-   * start listening openURL event
+   * start listening openURL event, you don't need to call it unless you explicit called cleanup
    */
   public start() {
     Linking.addEventListener('url', this.handleOpenURL.bind(this));
   }
 
   /**
-   * clean callbacks and stop listening openURL event
+   * stop listening openURL event and clean resolvers
    */
   public cleanup() {
     Linking.removeEventListener('url', this.handleOpenURL.bind(this));
@@ -81,8 +81,11 @@ class TrustWallet {
             // set default callback scheme
             payload.callbackScheme = this.callbackScheme;
           }
-          // tracking resolve by payload id
-          this.resolvers[payload.id] = resolve;
+          // tracking resolve/reject by payload id
+          this.resolvers[payload.id] = {
+            resolve,
+            reject
+          }
           const url = TrustCommand.getURL(payload);
           Linking.openURL(url);
         } else {
@@ -94,9 +97,13 @@ class TrustWallet {
 
   private handleOpenURL(event: { url: string; }) {
     const response = TrustCommand.parseURL(event.url);
-    const resolve = this.resolvers[response.id];
-    if (resolve) {
-      resolve(response.result);
+    const resolver = this.resolvers[response.id];
+    if (resolver) {
+      if (response.error.length > 0) {
+        resolver.reject(response.error);
+      } else {
+        resolver.resolve(response.result);
+      }
       delete this.resolvers[response.id];
     }
   }

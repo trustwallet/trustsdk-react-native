@@ -15,6 +15,7 @@ export enum TrustCommand {
  * @typedef {Object} Result
  * @property {string} id payload id
  * @property {string} result result value
+ * @property {string} error error message
  */
 
 export namespace TrustCommand {
@@ -23,20 +24,21 @@ export namespace TrustCommand {
    * @param urlString url called back
    * @returns {Result} parsed result
    */
-  export function parseURL(urlString: string): {id: string, result: string} {
+  export function parseURL(urlString: string): {id: string, result: string, error: string} {
     const url = URL(urlString, '', true);
     const id = url.query.id || '';
     let result = url.query.result || '';
+    let error = url.query.error || '';
     result = result.replace(/ /g, '+');
     return {
       'id': id,
+      'error': error,
       'result': Buffer.from(result, 'base64').toString('hex')
     };
   }
 
   /**
    * generate url for Linking.openURL
-   * @param command concrete TrustCommand
    * @param data concrete command payload
    * @param scheme target wallet scheme default: trust://
    */
