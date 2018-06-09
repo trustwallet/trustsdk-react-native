@@ -6,7 +6,8 @@ class TrustWallet {
   app = {
     name: 'Trust',
     scheme: 'trust://',
-    installURL: 'https://itunes.apple.com/ru/app/trust-ethereum-wallet/id1288339409'
+    AppStoreURL: 'https://itunes.apple.com/us/app/trust-ethereum-wallet/id1288339409',
+    GooglePlayURL: 'https://play.google.com/store/apps/details?id=com.wallet.crypto.trustapp'
   }
   resolvers: {[key: string]: {[key: string]: (value: string) => void}}= {}
 

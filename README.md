@@ -22,13 +22,41 @@ npm i react-native-trust-sdk
 
 ## Configuring Android
 
-> Trust Android is not ready yet.
-
 Make sure you have set up intent-filter for your app ([documentation here](https://developer.android.com/training/app-links/deep-linking#adding-filters))
+
+example app settings:
+
+```xml
+<activity
+  android:name=".MainActivity"
+  android:launchMode="singleTask"
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <data android:scheme="trust-rn-example"/>
+    </intent-filter>
+</activity>
+```
 
 ## Configuring iOS
 
 Make sure you have set up url scheme for your app (Open Xcode an click on your project. Go to the 'Info' tab and expand the 'URL Types' group).
+
+example app settings:
+
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+    <key>CFBundleTypeRole</key>
+    <string>Editor</string>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>trust-rn-example</string>
+    </array>
+  </dict>
+</array>
+```
 
 ```objc
 // iOS 9.x or newer
