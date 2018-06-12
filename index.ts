@@ -40,7 +40,8 @@ class TrustWallet {
    * check if Trust Wallet is installed
    */
   public installed(): Promise<boolean> {
-    return Linking.canOpenURL(this.app.scheme);
+    const testUrl = this.app.scheme + TrustCommand.signMessage; // works for iOS and Android
+    return Linking.canOpenURL(testUrl);
   }
 
   /**

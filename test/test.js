@@ -59,7 +59,7 @@ describe('TrustWallet tests', () => {
           url: 'test://sign-transaction?id=sign_tx_test&result=+HqAhDuaygCCUgiU5HSUN5wdSO5zRUwlGmOV/dT560MBlo+DQicAAAAAAAAAAAAAAAAAAAAAUiSB6qAEZLRc+TkIfbo5mPqsXEYBY+62m5AK8OuKz0z63hQg8aA4VF1NOW3edsGon0Sucr0G5AHxG3ddGz+PUgnD1ELqgA%3D%3D'
       });
     }, 10);
-    return wallet.signMessage(payload).then(result => {
+    return wallet.signTransaction(payload).then(result => {
       expect(result).toEqual('f87a80843b9aca0082520894e47494379c1d48ee73454c251a6395fdd4f9eb4301968f83422700000000000000000000000000000000522481eaa00464b45cf939087dba3998faac5c460163eeb69b900af0eb8acf4cfade1420f1a038545d4d396dde76c1a89f44ae72bd06e401f11b775d1b3f8f5209c3d442ea80');
     });
   })
@@ -134,6 +134,12 @@ describe('TrustCommand tests', () => {
       expect(result.result).toBe(
         'f87a80843b9aca0082520894e47494379c1d48ee73454c251a6395fdd4f9eb4301968f83422700000000000000000000000000000000522481eaa00464b45cf939087dba3998faac5c460163eeb69b900af0eb8acf4cfade1420f1a038545d4d396dde76c1a89f44ae72bd06e401f11b775d1b3f8f5209c3d442ea80'
       );
+    });
+
+    test('parse cancel result', () => {
+      var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1528786624065&error=cancelled');
+      expect(result.result).toBe('');
+      expect(result.error).toBe('cancelled');
     });
   });
 });

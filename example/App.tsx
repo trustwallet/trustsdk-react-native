@@ -57,11 +57,22 @@ export default class App extends Component<Props> {
   }
 
   signMsg() {
-    console.log(this.state.message);
+    console.log('signMsg', this.state.message);
     const payload = new MessagePayload(this.state.message);
     this.wallet.signMessage(payload)
     .then((result) => {
       Alert.alert('Message Signed', result);
+    }).catch((error) => {
+      Alert.alert('Error', error);
+    });
+  }
+
+  signPersonalMsg() {
+    console.log('signPersonalMsg', this.state.message);
+    const payload = new MessagePayload(this.state.message);
+    this.wallet.signPersonalMessage(payload)
+    .then((result) => {
+      Alert.alert('Personal Message Signed', result);
     }).catch((error) => {
       Alert.alert('Error', error);
     });
@@ -102,6 +113,7 @@ export default class App extends Component<Props> {
             <TextInput style={styles.input} value={this.state.message} onChangeText={(message) => this.setState({message})}/>
           </View>
           <Button title='Sign Message' onPress={this.signMsg.bind(this)} />
+          <Button title='Sign Personal Message' onPress={this.signPersonalMsg.bind(this)} />
         </View>
       </ScrollView>
     );
