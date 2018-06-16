@@ -1,6 +1,6 @@
 {
   "name": "react-native-trust-sdk",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "The react-native-trust-sdk lets you sign Ethereum transactions and messages with Trust Wallet so that you can bulid a react native DApp without having to worry about keys or wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

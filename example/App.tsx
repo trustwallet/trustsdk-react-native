@@ -52,7 +52,7 @@ export default class App extends Component<Props> {
       Alert.alert('Transaction Signed', result);
     })
     .catch((error) => {
-      Alert.alert('Error', error);
+      Alert.alert('Error', error.msg);
     });
   }
 
@@ -63,7 +63,7 @@ export default class App extends Component<Props> {
     .then((result) => {
       Alert.alert('Message Signed', result);
     }).catch((error) => {
-      Alert.alert('Error', error);
+      Alert.alert('Error', error.msg);
     });
   }
 
@@ -74,7 +74,7 @@ export default class App extends Component<Props> {
     .then((result) => {
       Alert.alert('Personal Message Signed', result);
     }).catch((error) => {
-      Alert.alert('Error', error);
+      Alert.alert('Error', error.msg);
     });
   }
 

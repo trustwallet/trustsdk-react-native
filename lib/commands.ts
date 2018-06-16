@@ -28,7 +28,7 @@ export namespace TrustCommand {
     const url = URL(urlString, '', true);
     const id = url.query.id || '';
     let result = url.query.result || '';
-    let error = url.query.error || '';
+    let error = url.query.error || '0';
     result = result.replace(/ /g, '+');
     return {
       'id': id,

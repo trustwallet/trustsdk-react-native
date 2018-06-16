@@ -1,5 +1,6 @@
 'use strict';
 var {TrustCommand, MessagePayload, TransactionPayload} = require('../dist/index');
+var { TrustError } = require('../dist/index');
 var TrustWallet = require('../dist/index').default;
 
 var TestCallbackScheme = 'trust-rn-example://';
@@ -22,6 +23,7 @@ describe('TrustWallet tests', () => {
   test('installed()', () => {
     return wallet.installed().then(result => {
       expect(result).toEqual(true);
+      expect(TrustError.toString(TrustError.notInstalled).length).toBeGreaterThan(0);
     });
   });
 
@@ -136,10 +138,58 @@ describe('TrustCommand tests', () => {
       );
     });
 
-    test('parse cancel result', () => {
-      var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1528786624065&error=cancelled');
+    test('parse cancel error', () => {
+      var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1528786624065&error=1');
       expect(result.result).toBe('');
-      expect(result.error).toBe('cancelled');
+      var code = parseInt(result.error);
+      expect(code).toBe(TrustError.cancelled);
+      expect(TrustError.toString(code).length).toBeGreaterThan(0);
+    });
+
+    test('parse watch only error', () => {
+      var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1528786624065&error=3');
+      expect(result.result).toBe('');
+      var code = parseInt(result.error);
+      expect(code).toBe(TrustError.watchOnly);
+      expect(TrustError.toString(code).length).toBeGreaterThan(0);
+    });
+
+    test('parse invalid request error', () => {
+      var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1528786624065&error=2');
+      expect(result.result).toBe('');
+      var code = parseInt(result.error);
+      expect(code).toBe(TrustError.invalidRequest);
+      expect(TrustError.toString(code).length).toBeGreaterThan(0);
+    });
+
+    test('parse no error', () => {
+      var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1528786624065&error=0');
+      expect(result.result).toBe('');
+      var code = parseInt(result.error);
+      expect(code).toBe(TrustError.none);
+      expect(TrustError.toString(code).length).toBeGreaterThan(0);
+    });
+
+    test('parse no error 2', () => {
+      var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1528786624065');
+      expect(result.result).toBe('');
+      var code = parseInt(result.error);
+      expect(code).toBe(TrustError.none);
+      expect(TrustError.toString(code).length).toBeGreaterThan(0);
+    });
+
+    test('parse unknown error', () => {
+      var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1528786624065&error=-1');
+      expect(result.result).toBe('');
+      var code = parseInt(result.error);
+      expect(code).toBe(TrustError.unknown);
+      expect(TrustError.toString(code).length).toBeGreaterThan(0);
+    });
+
+    test('parse unknown error 2', () => {
+      var result = TrustCommand.parseURL('trust-rn-example://sign-message?id=msg_1528786624065&error=1234');
+      var code = parseInt(result.error);
+      expect(TrustError.toString(code).length).toBe(0);
     });
   });
 });
