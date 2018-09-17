@@ -84,6 +84,8 @@ example app settings:
 Checkout the example typescript project in `example` folder.
 
 ```shell
+git clone git@github.com:TrustWallet/react-native-trust-sdk.git
+cd react-native-trust-sdk/example
 npm install && npm start
 react-native run-ios
 ```
