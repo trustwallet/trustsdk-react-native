@@ -4253,9 +4253,9 @@ react-is@^16.3.1:
   version "16.4.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.0.tgz#cc9fdc855ac34d2e7d9d2eb7059bbc240d35ffcf"
 
-react-native-trust-sdk@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-trust-sdk/-/react-native-trust-sdk-0.0.3.tgz#cc14d8f363b12f1fe8b612aa35c6a0b56ed37b71"
+react-native-trust-sdk@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/react-native-trust-sdk/-/react-native-trust-sdk-0.0.6.tgz#e6653fc9d7087c36a2108f9558940070c223b654"
   dependencies:
     buffer "^5.1.0"
     url-parse "^1.4.0"
