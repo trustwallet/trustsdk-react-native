@@ -3,151 +3,142 @@
  * https://github.com/facebook/react-native
  *
  * Generated with the TypeScript template
- * https://github.com/emin93/react-native-template-typescript
+ * https://github.com/react-native-community/react-native-template-typescript
+ *
+ * @format
  */
 
-import React, { Component } from 'react';
+import React from 'react';
 import {
-  Platform,
+  SafeAreaView,
   StyleSheet,
-  Text,
-  TextInput,
-  View,
   ScrollView,
-  Linking,
-  Alert,
-  Button
+  View,
+  Text,
+  StatusBar,
+  Button,
+  Alert
 } from 'react-native';
 
-import TrustWallet, { MessagePayload, TransactionPayload } from 'react-native-trust-sdk';
+import {
+  Header,
+  Colors,
+} from 'react-native/Libraries/NewAppScreen';
 
-interface Props {}
-export default class App extends Component<Props> {
+import TrustWallet, {CoinType} from './lib';
 
-  wallet: TrustWallet
-  callbackScheme: string = 'trust-rn-example://'
+declare const global: {HermesInternal: null | {}};
 
-  state = {
-    address: '0xE47494379c1d48ee73454C251A6395FDd4F9eb43',//FIXME eip55
-    amount: '1',
-    message: 'hello trust',
-    data: '0x8f834227000000000000000000000000000000005224'
-  }
+class App extends React.Component {
+  wallet?: TrustWallet
 
   componentDidMount() {
-    this.wallet = new TrustWallet(this.callbackScheme);
+    this.wallet = new TrustWallet("trust-rn-example://");
+    this.wallet.installed().then(installed => {
+      if (!installed) {
+        Alert.alert('Info', 'Trust Wallet is not installed');
+      }
+    });
   }
 
   componentWillUnmount() {
-    this.wallet.cleanup();
+    this.wallet?.cleanup();
   }
 
-  signTx() {
-    console.log('to: ' + this.state.address);
-    console.log('amount: ' + this.state.amount);
-    console.log('data: ' + this.state.data);
-    var payload = new TransactionPayload(this.state.address, this.state.amount, this.state.data);
-    this.wallet.signTransaction(payload)
-    .then((result) => {
-      Alert.alert('Transaction Signed', result);
-    })
-    .catch((error) => {
-      Alert.alert('Error', error.msg);
-    });
+  requestAccount(coins: CoinType[]) {
+    console.log("requestAccount");
+    this.wallet?.requestAccounts(coins)
+    .then((accounts) => {
+      Alert.alert('Accounts', accounts.join('\n'));
+    }).catch(console.log);
   }
 
-  signMsg() {
-    console.log('signMsg', this.state.message);
-    const payload = new MessagePayload(this.state.message);
-    this.wallet.signMessage(payload)
-    .then((result) => {
-      Alert.alert('Message Signed', result);
-    }).catch((error) => {
-      Alert.alert('Error', error.msg);
-    });
-  }
+  signTransaction(send: boolean = false) {
 
-  signPersonalMsg() {
-    console.log('signPersonalMsg', this.state.message);
-    const payload = new MessagePayload(this.state.message);
-    this.wallet.signPersonalMessage(payload)
-    .then((result) => {
-      Alert.alert('Personal Message Signed', result);
-    }).catch((error) => {
-      Alert.alert('Error', error.msg);
-    });
   }
 
   render() {
     return (
-      <ScrollView contentContainerStyle={styles.container} keyboardDismissMode='on-drag'>
-        <Text style={styles.welcome}>
-          react-native-trust-sdk example app
-        </Text>
-        <View>
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Address:
-            </Text>
-            <TextInput style={styles.input} value={this.state.address} onChangeText={(address) => this.setState({address})}/>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Data:
-            </Text>
-            <TextInput style={styles.input} value={this.state.data} onChangeText={(data) => this.setState({data})}/>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Amount:
-            </Text>
-            <TextInput style={styles.input} value={this.state.amount} onChangeText={(amount) => this.setState({amount})}/>
-          </View>
-          <Button title='Sign Transaction' onPress={this.signTx.bind(this)} />
-        </View>
-        <View style={styles.messageContainer}>
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Message:
-            </Text>
-            <TextInput style={styles.input} value={this.state.message} onChangeText={(message) => this.setState({message})}/>
-          </View>
-          <Button title='Sign Message' onPress={this.signMsg.bind(this)} />
-          <Button title='Sign Personal Message' onPress={this.signPersonalMsg.bind(this)} />
-        </View>
-      </ScrollView>
+      <>
+        <StatusBar barStyle="dark-content" />
+        <SafeAreaView>
+          <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            style={styles.scrollView}>
+            <Header />
+            {global.HermesInternal == null ? null : (
+              <View style={styles.engine}>
+                <Text style={styles.footer}>Engine: Hermes</Text>
+              </View>
+            )}
+            <View style={styles.body}>
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}>Request Accounts</Text>
+                <Text style={styles.sectionDescription}>                
+                </Text>
+                <Button title='Ethereum' onPress={() => {
+                  this.requestAccount([CoinType.ethereum]);
+                }} />
+                <Button title='Ethereum + Cosmos +Binance' onPress={() => {
+                  this.requestAccount([CoinType.ethereum, CoinType.cosmos, CoinType.binance]);
+                }}/>
+              </View>
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}>Sign Transactions</Text>
+                <Text style={styles.sectionDescription}>                
+                </Text>
+                <Button title='Sign Ethereum' onPress={() => {
+                  this.signTransaction();
+                }} />
+                <Button title='Sign and Send Ethereum' onPress={() => {
+                  this.signTransaction(true);
+                }}/>
+              </View>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </>
     );
   }
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5FCFF',
+  scrollView: {
+    backgroundColor: Colors.lighter,
   },
-  messageContainer: {
-    marginTop: 40
+  engine: {
+    position: 'absolute',
+    right: 0,
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    margin: 5
+  body: {
+    backgroundColor: Colors.white,
   },
-  label: {
-    flex: 1,
-    fontSize: 12
+  sectionContainer: {
+    marginTop: 32,
+    paddingHorizontal: 24,
   },
-  input: {
-    flex: 5,
-    fontSize: 11,
-    borderWidth: 1,
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: Colors.black,
+  },
+  sectionDescription: {
+    marginTop: 8,
+    fontSize: 18,
+    fontWeight: '400',
+    color: Colors.dark,
+  },
+  highlight: {
+    fontWeight: '700',
+  },
+  footer: {
+    color: Colors.dark,
+    fontSize: 12,
+    fontWeight: '600',
     padding: 4,
+    paddingRight: 12,
+    textAlign: 'right',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    marginTop: 64,
-    marginBottom: 20
-  }
 });
+
+export default App;

@@ -1,8 +1,6 @@
-import { Buffer } from 'buffer'
 import URL from 'url-parse'
 import { CoinType } from './wallet-core'
 import { TrustError } from './errors'
-global.Buffer = Buffer
 
 export enum TrustCommand {
   requestAccounts = 'sdk_get_accounts',

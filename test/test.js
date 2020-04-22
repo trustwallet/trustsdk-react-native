@@ -1,7 +1,7 @@
 'use strict'
-var { TrustCommand, AccountsRequest, TransactionRequest, TrustError, DAppMetadata} = require('../dist/index')
-var { CoinType } = require('../dist/index')
-var TrustWallet = require('../dist/index').default
+var { TrustCommand, AccountsRequest, TransactionRequest, TrustError, DAppMetadata} = require('../dist')
+var { CoinType } = require('../dist')
+var TrustWallet = require('../dist').default
 
 var TestCallbackScheme = 'trust-rn-example'
 

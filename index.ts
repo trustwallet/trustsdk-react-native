@@ -54,7 +54,7 @@ class TrustWallet {
    * @returns {Promise<string>} signed transaction hash
    */
   public requestAccounts(coins: CoinType[]): Promise<string[]> {
-    const request = new AccountsRequest(coins, this.genId('acc_') ,this.callbackScheme)
+    const request = new AccountsRequest(coins, this.genId('acc_'), this.callbackScheme)
     return this.sendRequest(request).then(result => {return result.split(',')})
   }
 
