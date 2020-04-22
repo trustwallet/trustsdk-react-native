@@ -132,7 +132,8 @@ typings/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -203,4 +204,7 @@ freeline/
 freeline_project_description.json
 
 dist/
-# End of https://www.gitignore.io/api/reactnative
+lib/models.js
+lib/models.d.ts
+
+.vscode/

@@ -1,23 +1,20 @@
-import {Buffer} from 'buffer';
-global.Buffer = Buffer;
-import URL from 'url-parse';
+import { Buffer } from 'buffer'
+import URL from 'url-parse'
+import { CoinType } from './wallet-core'
+import { TrustError } from './errors'
+global.Buffer = Buffer
 
 export enum TrustCommand {
-  // sign a message
-  signMessage = 'sign-message',
-  // sign a personal message
-  signPersonalMessage = 'sign-personal-message',
-  // sign a transaction
-  signTransaction = 'sign-transaction'
+  requestAccounts = 'sdk_get_accounts',
+  signTransaction = 'sdk_sign'
 }
 
 /**
  * @typedef {Object} Result
- * @property {string} id payload id
+ * @property {string} id request id
  * @property {string} result result value
  * @property {string} error error message
  */
-
 export namespace TrustCommand {
   /**
    * helper method to parse url called back from Trust
@@ -25,16 +22,23 @@ export namespace TrustCommand {
    * @returns {Result} parsed result
    */
   export function parseURL(urlString: string): {id: string, result: string, error: string} {
-    const url = URL(urlString, '', true);
-    const id = url.query.id || '';
-    let result = url.query.result || '';
-    let error = url.query.error || '0';
-    result = result.replace(/ /g, '+');
-    return {
-      'id': id,
-      'error': error,
-      'result': Buffer.from(result, 'base64').toString('hex')
-    };
+    const url = URL(urlString, '', true)
+    const id = url.query.id || ''
+    let error = '' + TrustError.invalidResponse
+    let result = ''
+    if (!id) {
+      return {id, result, error}
+    }
+    error = url.query.error || TrustError.none
+    if (id.startsWith('acc_')) {
+      result = url.query.accounts || ''
+    } else if (id.startsWith('sign_')) {
+      result = url.query.data || ''
+      if (result.length < 0) {
+        result = url.query.tx_hash || ''
+      }
+    }
+    return {id, result, error}
   }
 
   /**
@@ -42,116 +46,123 @@ export namespace TrustCommand {
    * @param data concrete command payload
    * @param scheme target wallet scheme default: trust://
    */
-  export function getURL(data: Payload, scheme: string = 'trust://'): string {
-    var msgUrl = URL(scheme + data.type + '?' + data.toQuery());
-    return msgUrl.toString();
+  export function getURL(request: Request, scheme: string = 'trust://'): string {
+    let query = processQuery(request.toQuery())
+    var msgUrl = URL(scheme + request.command + '?' + query)
+    return msgUrl.toString()
+  }
+
+  export function processQuery(query: QueryItem[]): string {
+    return query.map((pair) => {
+      return pair.k + '=' + pair.v
+    }).join('&')
   }
 }
 
 /**
- * Abstract Payload for TrustCommand
+ * Abstract Request for TrustCommand
  */
-export interface Payload {
-  // payload bookkeeping id
+export interface Request {
   id: string
-  // payload type
-  type: TrustCommand
-  // scheme for Trust calls back
+  command: string
   callbackScheme: string
-  // convert to query string
-  toQuery(): string
+  callbackPath: string
+  toQuery(): QueryItem[]
 }
 
-/**
- * MessagePayload for TrustCommand.signMessage|.signPersonalMessage
- */
-export class MessagePayload implements Payload {
-  id: string
-  message: string
-  address: string
-  callbackScheme: string
-  type: TrustCommand = TrustCommand.signMessage
+class QueryItem {
+  k: string
+  v: string
+  constructor(k: string, v: string) {
+    this.k = k
+    this.v = v
+  }
+}
 
-  /**
-   * constructor
-   * @param message message to sign
-   * @param address optional wallet address
-   * @param callbackScheme scheme for Trust calls back
-   */
-  constructor(message: string, address?: string, callbackScheme?: string) {
-    this.message = Buffer.from(message).toString('base64');
-    this.address = address || '';
-    this.callbackScheme = callbackScheme || '';
-    this.id = 'msg_' + (new Date()).getTime();
+export class AccountsRequest implements Request {
+  id: string
+  command: string = TrustCommand.requestAccounts
+  coins: CoinType[]
+  callbackScheme: string
+  callbackPath: string
+
+  constructor(coins: CoinType[], callbackId: string, callbackScheme?: string, callbackPath?: string) {
+    this.coins = coins
+    this.callbackScheme = callbackScheme || ''
+    this.callbackPath = callbackPath || TrustCommand.requestAccounts
+    this.id = callbackId
   }
 
-  toQuery(): string {
-    var array = [];
-    array.push({k: 'message', v: this.message});
-    if(this.address.length > 0) {
-      array.push({k: 'address', v: this.address});
+  toQuery(): QueryItem[] {
+    var array: QueryItem[] = []
+    if (this.coins.length > 0) {
+      this.coins.forEach((coin, index) => {
+        array.push({k: `coins.${index}`, v: `${coin}`})
+      })
+    } else {
+      return []
     }
     if(this.callbackScheme.length > 0) {
-      const callbackUrl = this.callbackScheme + this.type + '?id=' + this.id;
-      array.push({k: 'callback', v: callbackUrl});
+      array.push({k: 'app', v: this.callbackScheme})
+      array.push({k: 'callback', v: this.callbackPath})
     }
-    return array.map((pair) => {
-      return pair.k + '=' + encodeURIComponent(pair.v);
-    }).join('&');
+    array.push({k: 'id', v: this.id})
+    return array
   }
 }
 
-/**
- * TransactionPayload for TrustCommand.signTransaction
- */
-export class TransactionPayload implements Payload {
+export class DAppMetadata {
+  name: string
+  url: string
+
+  constructor(name: string, url: string) {
+    this.name = name
+    this.url = url
+  }
+
+
+  toQuery(): QueryItem[] {
+    return [
+      {k: 'meta.__name', v: 'dApp'},
+      {k: 'meta.name', v: this.name},
+      {k: 'meta.url', v: this.url},
+    ]
+  }
+}
+
+export class TransactionRequest implements Request {
   id: string
-  gasPrice: string
-  gasLimit: string
-  to: string
-  amount: string
-  nonce: string
+  command: string = TrustCommand.signTransaction
+  coin: CoinType
   data: string
+  send: boolean
+  meta?: DAppMetadata
   callbackScheme: string
-  type: TrustCommand = TrustCommand.signTransaction
+  callbackPath: string
 
-  /**
-   * constructor
-   * @param to EIP55 Address
-   * @param amount Amount
-   * @param data optioanl transaction data represented by hex string
-   * @param gasPrice default: 21, unit: Gwei
-   * @param gasLimit default: 21000
-   * @param nonce default: 0
-   * @param callbackScheme scheme for Trust calls back
-   */
-  constructor(to: string, amount: string, data?: string, gasPrice?: string, gasLimit?: string, nonce?: string, callbackScheme?: string) {
-    this.to = to;
-    this.amount = amount;
-    this.data = data || '';
-    this.gasPrice = gasPrice || '21';
-    this.gasLimit = gasLimit || '21000';
-    this.nonce = nonce || '0';
-    this.callbackScheme = callbackScheme || '';
-    this.id = 'tx_' + (new Date()).getTime();
+  constructor(coin: CoinType, data: string, callbackId: string, send?: boolean, meta?: DAppMetadata, callbackScheme?: string, callbackPath?: string) {
+    this.coin = coin
+    this.data = data
+    this.send = send || false
+    this.meta = meta
+    this.callbackScheme = callbackScheme || ''
+    this.callbackPath = callbackPath || TrustCommand.signTransaction
+    this.id = callbackId
   }
 
-  toQuery(): string {
-    var array = [];
-    array.push({k: 'to', v: this.to});
-    array.push({k: 'amount', v: this.amount});
-    array.push({k: 'gasPrice', v: this.gasPrice});
-    array.push({k: 'gasLimit', v: this.gasLimit});
-    if(this.data.length > 0) {
-      array.push({k: 'data', v: this.data});
+  toQuery(): QueryItem[] {
+    var array: QueryItem[] = []
+    array.push({k: 'coin', v: `${this.coin}`})
+    array.push({k: 'data', v: this.data})
+    if (this.meta) {
+      array = array.concat(this.meta.toQuery())
     }
-    array.push({k: 'nonce', v: this.nonce});
+    array.push({k: 'send', v: `${this.send}`})
     if(this.callbackScheme.length > 0) {
-      const callbackUrl = this.callbackScheme + TrustCommand.signTransaction + '?id=' + this.id;
-      array.push({k: 'callback', v: callbackUrl});
+      array.push({k: 'app', v: this.callbackScheme})
+      array.push({k: 'callback', v: this.callbackPath})
     }
-    return array.map((pair) => {
-      return pair.k + '=' + encodeURIComponent(pair.v);
-    }).join('&');
+    array.push({k: 'id', v: this.id})
+    return array
   }
 }
