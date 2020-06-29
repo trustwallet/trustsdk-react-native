@@ -1,18 +1,19 @@
 # react-native-trust-sdk
 
-[![Build Status](https://travis-ci.org/TrustWallet/react-native-trust-sdk.svg?branch=master)](https://travis-ci.org/TrustWallet/react-native-trust-sdk)
+![CI](https://github.com/trustwallet/react-native-trust-sdk/workflows/CI/badge.svg)
 [![npm version](https://badge.fury.io/js/react-native-trust-sdk.svg)](https://badge.fury.io/js/react-native-trust-sdk)
 [![Coverage Status](https://coveralls.io/repos/github/TrustWallet/react-native-trust-sdk/badge.svg?branch=master)](https://coveralls.io/github/TrustWallet/react-native-trust-sdk?branch=master)
 
 The react-native-trust-sdk lets you sign Ethereum transactions and messages with Trust Wallet so that you can bulid a react native DApp without having to worry about keys or wallets.
 
-* [Installation](#installation)
-* [Configuring Android](#configuring-android)
-* [Configuring iOS](#configuring-ios)
-* [Example](#example)
-* [Usage](#usage)
-* [Contributing](#contributing)
-* [License](#license)
+- [react-native-trust-sdk](#react-native-trust-sdk)
+  - [Installation](#installation)
+  - [Configuring Android](#configuring-android)
+  - [Configuring iOS](#configuring-ios)
+  - [Example](#example)
+  - [Usage](#usage)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Installation
 
@@ -90,14 +91,14 @@ npm install && npm start
 react-native run-ios
 ```
 
-![demo gif](doc/demo.gif)
+![demo gif](https://user-images.githubusercontent.com/360470/86009121-669bf880-ba4c-11ea-8bb7-3c2d8a139a68.gif)
 
 ## Usage
 
 import the package:
 
 ```typescript
-import TrustWallet, { MessagePayload, TransactionPayload } from 'react-native-trust-sdk';
+import TrustWallet, {CoinType} from 'react-native-trust-sdk'
 ```
 
 initialize an instance, e.g. in `componentDidMount`:
@@ -106,30 +107,47 @@ initialize an instance, e.g. in `componentDidMount`:
 const wallet = new TrustWallet('<your_app_scheme>://');
 ```
 
+request accounts
+
+```typescript
+wallet.requestAccounts([CoinType.ethereum, CoinType.binance])
+.then((accounts) => {
+  Alert.alert('Accounts', accounts.join('\n'))
+}).catch(error => {
+  console.log(error)
+  Alert.alert('Error', JSON.stringify(error))
+})
+```
+
 sign a message:
 
 ```typescript
-const payload = new MessagePayload('hello trust');
-wallet.signMessage(payload)
-    .then((result) => {
-      console.log('Message Signed', result);
-    }).catch((error) => {
-      console.log('Error', error);
-    });
+const message = utils.keccak256(this.ethereumMessage("Some message"))
+wallet.signMessage(message, CoinType.ethereum)
+.then((result) => {
+  Alert.alert('Signature', result)
+}).catch(error => {
+  Alert.alert('Error', JSON.stringify(error))
+})
 ```
 
 sign a transaction:
 
 ```typescript
-const payload = new TransactionPayload('<address>', '<amount>', '<data>');
-wallet.signTransaction(payload)
-    .then((result) => {
-      console.log('Transaction Signed', result);
-    })
-    .catch((error) => {
-      console.log('Error', error);
-    });
-});
+const tx = {
+  toAddress: '0x728B02377230b5df73Aa4E3192E89b6090DD7312',
+  chainId: Buffer.from('0x01', 'hex'),
+  nonce: this.serializeBigInt('447'),
+  gasPrice: this.serializeBigInt('2112000000'),
+  gasLimit: this.serializeBigInt('21000'),
+  amount: this.serializeBigInt('100000000000000')
+}
+wallet.signTransaction(tx, CoinType.ethereum, send)
+.then(result =>{
+  Alert.alert('Transaction', result)
+}).catch(error => {
+  Alert.alert('Error', JSON.stringify(error))
+})
 ```
 
 clean up all resolve handlers, e.g. in`componentWillUnmount`:
