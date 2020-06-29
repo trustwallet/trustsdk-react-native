@@ -1,6 +1,6 @@
 {
   "name": "react-native-trust-sdk",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "The react-native-trust-sdk lets you sign Ethereum transactions and messages with Trust Wallet so that you can bulid a react native DApp without having to worry about keys or wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TrustWallet/react-native-trust-sdk.git"
+    "url": "git+https://github.com/trustwallet/react-native-trust-sdk.git"
   },
   "keywords": [
     "react-native",
@@ -22,9 +22,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TrustWallet/react-native-trust-sdk/issues"
+    "url": "https://github.com/trustwallet/react-native-trust-sdk/issues"
   },
-  "homepage": "https://github.com/TrustWallet/react-native-trust-sdk#readme",
+  "homepage": "https://github.com/trustwallet/react-native-trust-sdk#readme",
   "devDependencies": {
     "@types/node": "^10.1.2",
     "@types/react-native": "^0.55.15",
@@ -39,6 +39,7 @@
     "jest": "^23.1.0",
     "jsdoc": "^3.6.4",
     "protobufjs": "^6.8.9",
+    "react": "^16.13.1",
     "react-native": "^0.55.4",
     "ts-jest": "^22.4.6",
     "typescript": "^2.8.3",
