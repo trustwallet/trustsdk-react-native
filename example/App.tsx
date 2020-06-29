@@ -8,7 +8,7 @@
  * @format
  */
 
-import React from 'react';
+import React from 'react'
 import {
   SafeAreaView,
   StyleSheet,
@@ -18,43 +18,85 @@ import {
   StatusBar,
   Button,
   Alert
-} from 'react-native';
+} from 'react-native'
 
 import {
   Header,
   Colors,
-} from 'react-native/Libraries/NewAppScreen';
+} from 'react-native/Libraries/NewAppScreen'
 
-import TrustWallet, {CoinType} from './lib';
+import TrustWallet, {CoinType} from './lib'
+import { Buffer } from "buffer"
+import { utils, BigNumber } from 'ethers'
+import console from 'console'
 
-declare const global: {HermesInternal: null | {}};
+declare const global: {HermesInternal: null | {}}
 
 class App extends React.Component {
   wallet?: TrustWallet
 
   componentDidMount() {
-    this.wallet = new TrustWallet("trust-rn-example://");
+    this.wallet = new TrustWallet("trust-rn-example://")
     this.wallet.installed().then(installed => {
       if (!installed) {
-        Alert.alert('Info', 'Trust Wallet is not installed');
+        Alert.alert('Info', 'Trust Wallet is not installed')
       }
-    });
+    })
   }
 
   componentWillUnmount() {
-    this.wallet?.cleanup();
+    this.wallet?.cleanup()
   }
 
   requestAccount(coins: CoinType[]) {
-    console.log("requestAccount");
+    console.log("requestAccount")
     this.wallet?.requestAccounts(coins)
     .then((accounts) => {
-      Alert.alert('Accounts', accounts.join('\n'));
-    }).catch(console.log);
+      Alert.alert('Accounts', accounts.join('\n'))
+    }).catch(error => {
+      console.log(error)
+      Alert.alert('Error', JSON.stringify(error))
+    })
   }
 
-  signTransaction(send: boolean = false) {
+  signMessage() {
+    console.log("sign Ethereum message")
+    const message = utils.keccak256(this.ethereumMessage("Some message"))
+    this.wallet?.signMessage(message, CoinType.ethereum)
+    .then((result) => {
+      Alert.alert('Signature', result)
+    }).catch(error => {
+      Alert.alert('Error', JSON.stringify(error))
+    })
+  }
 
+  ethereumMessage(str: string): Buffer {
+    const data = Buffer.from(str, "utf8")
+    const prefix = Buffer.from(`\u{19}Ethereum Signed Message:\n${data.length}`, "utf8")
+    return Buffer.concat([prefix, data])
+  }
+
+  serializeBigInt(value: string): Buffer {
+    const serialized = Buffer.from(BigNumber.from(value).toHexString().slice(2), 'hex')
+    return serialized
+  }
+
+  signEthereumTransaction(send: boolean = false) {
+    console.log("signTransaction send: " + send)
+    const tx = {
+      toAddress: '0x728B02377230b5df73Aa4E3192E89b6090DD7312',
+      chainId: Buffer.from('0x01', 'hex'),
+      nonce: this.serializeBigInt('447'),
+      gasPrice: this.serializeBigInt('2112000000'),
+      gasLimit: this.serializeBigInt('21000'),
+      amount: this.serializeBigInt('100000000000000')
+    }
+    this.wallet?.signTransaction(tx, CoinType.ethereum, send)
+    .then(result =>{
+      Alert.alert('Transaction', result)
+    }).catch(error => {
+      Alert.alert('Error', JSON.stringify(error))
+    })
   }
 
   render() {
@@ -77,30 +119,33 @@ class App extends React.Component {
                 <Text style={styles.sectionDescription}>                
                 </Text>
                 <Button title='Ethereum' onPress={() => {
-                  this.requestAccount([CoinType.ethereum]);
+                  this.requestAccount([CoinType.ethereum])
                 }} />
                 <Button title='Ethereum + Cosmos +Binance' onPress={() => {
-                  this.requestAccount([CoinType.ethereum, CoinType.cosmos, CoinType.binance]);
+                  this.requestAccount([CoinType.ethereum, CoinType.cosmos, CoinType.binance])
                 }}/>
               </View>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Sign Transactions</Text>
                 <Text style={styles.sectionDescription}>                
                 </Text>
-                <Button title='Sign Ethereum' onPress={() => {
-                  this.signTransaction();
+                <Button title='Sign Ethereum Message' onPress={() => {
+                  this.signMessage()
                 }} />
-                <Button title='Sign and Send Ethereum' onPress={() => {
-                  this.signTransaction(true);
+                <Button title='Sign Ethereum Tx' onPress={() => {
+                  this.signEthereumTransaction()
+                }} />
+                <Button title='Sign and Send Ethereum Tx' onPress={() => {
+                  this.signEthereumTransaction(true)
                 }}/>
               </View>
             </View>
           </ScrollView>
         </SafeAreaView>
       </>
-    );
+    )
   }
-};
+}
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -139,6 +184,6 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     textAlign: 'right',
   },
-});
+})
 
-export default App;
+export default App

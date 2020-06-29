@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "buffer": "^5.6.0",
+    "console": "^0.7.2",
+    "ethers": "^5.0.3",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "url-parse": "^1.4.7"
@@ -30,7 +32,8 @@
     "metro-react-native-babel-preset": "^0.58.0",
     "prettier": "^2.0.4",
     "react-test-renderer": "16.11.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "protobufjs": "^6.9.0"
   },
   "jest": {
     "preset": "react-native",

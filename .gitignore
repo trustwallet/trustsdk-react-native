@@ -204,7 +204,7 @@ freeline/
 freeline_project_description.json
 
 dist/
-lib/models.js
-lib/models.d.ts
+lib/core_models.js
+lib/core_models.d.ts
 
 .vscode/

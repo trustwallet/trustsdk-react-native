@@ -1,7 +1,9 @@
 import { Linking } from 'react-native'
-import { TrustCommand, Request, AccountsRequest, TransactionRequest, DAppMetadata} from './lib/commands'
+import { Buffer } from 'buffer'
+import { TrustCommand, Request, AccountsRequest, MessageRequest, TransactionRequest, DAppMetadata} from './lib/commands'
 import { TrustError } from './lib/errors'
-import { CoinType } from './lib/wallet-core'
+import { CoinType } from './lib/core_types'
+import { TW } from './lib/core_models'
 
 class TrustWallet {
   callbackScheme: string
@@ -60,10 +62,30 @@ class TrustWallet {
 
   /**
    * sign a transaction
+   * @param request message request
+   * @returns {Promise<string>} signed transaction hash
+   */
+  public signMessage(message: string, coin: CoinType): Promise<string> {
+    const request = new MessageRequest(coin, message, this.genId('msg_'), this.callbackScheme)
+    return this.sendRequest(request)
+  }
+
+  /**
+   * sign a transaction
    * @param request transaction request
    * @returns {Promise<string>} signed transaction hash
    */
-  public signTransaction(request: TransactionRequest): Promise<string | string[]> {
+  public signTransaction(input: Object, coin: CoinType, send: boolean = false, meta?: DAppMetadata): Promise<string> {
+    let data = new Uint8Array(0)
+    switch (coin) {
+      case CoinType.ethereum:
+        let proto = TW.Ethereum.Proto.SigningInput.create(input)
+        data = TW.Ethereum.Proto.SigningInput.encode(proto).finish()
+        break
+      default:
+        throw new Error("not implemented yet")
+    }
+    const request = new TransactionRequest(coin, Buffer.from(data).toString('base64'), this.genId('tx_'), send, meta, this.callbackScheme)
     return this.sendRequest(request)
   }
 
@@ -117,4 +139,4 @@ class TrustWallet {
 }
 
 export default TrustWallet
-export {TrustCommand, AccountsRequest, TransactionRequest, CoinType, TrustError, DAppMetadata}
+export {TrustCommand, AccountsRequest, MessageRequest, TransactionRequest, CoinType, TrustError, DAppMetadata}

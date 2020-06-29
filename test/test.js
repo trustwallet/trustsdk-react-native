@@ -1,7 +1,8 @@
 'use strict'
-var { TrustCommand, AccountsRequest, TransactionRequest, TrustError, DAppMetadata} = require('../dist')
+var { TrustCommand, AccountsRequest, MessageRequest, TransactionRequest, TrustError, DAppMetadata} = require('../dist')
 var { CoinType } = require('../dist')
 var TrustWallet = require('../dist').default
+var Buffer = require('buffer').Buffer
 
 var TestCallbackScheme = 'trust-rn-example'
 
@@ -35,18 +36,37 @@ describe('TrustWallet tests', () => {
     });
   })
 
-  // test('signTransaction()', () => {
-  //   var request = new TransactionRequest(ToAddress, '1')
-  //   request.id = 'sign_sign_test'
-  //   setTimeout(() => {
-  //     wallet.handleOpenURL({
-  //         url: 'test://sign-transaction?id=sign_sign_test&result=+HqAhDuaygCCUgiU5HSUN5wdSO5zRUwlGmOV/dT560MBlo+DQicAAAAAAAAAAAAAAAAAAAAAUiSB6qAEZLRc+TkIfbo5mPqsXEYBY+62m5AK8OuKz0z63hQg8aA4VF1NOW3edsGon0Sucr0G5AHxG3ddGz+PUgnD1ELqgA%3D%3D'
-  //     })
-  //   }, 10)
-  //   return wallet.signTransaction(request).then(result => {
-  //     expect(result).toEqual('f87a80843b9aca0082520894e47494379c1d48ee73454c251a6395fdd4f9eb4301968f83422700000000000000000000000000000000522481eaa00464b45cf939087dba3998faac5c460163eeb69b900af0eb8acf4cfade1420f1a038545d4d396dde76c1a89f44ae72bd06e401f11b775d1b3f8f5209c3d442ea80')
-  //   })
-  // })
+  test('signMessage(CoinType.ethereum)', () => {
+    setTimeout(() => {
+      wallet.handleOpenURL({
+          url: 'test://sdk_sign_result?signature=c8ec59d0a1628d1b5f4edef41e0ce65e38ac6b34098cd58a885e33e7028962c141fe0819320e4467a1d3257a46e191f4c096d9c57999c6a6f39ec0241f2737401b&id=msg_1527509558002'
+      });
+    }, 1000);
+
+    // sha3(ethereum message prefix + "Some data")
+    return wallet.signMessage("4fe61e1a9fb1d18a78977ad1e9611e8c546d54743cf2ff1836fc6933df9f1a54", CoinType.Ethereum).then(result => {
+      expect(result).toEqual("c8ec59d0a1628d1b5f4edef41e0ce65e38ac6b34098cd58a885e33e7028962c141fe0819320e4467a1d3257a46e191f4c096d9c57999c6a6f39ec0241f2737401b")
+    });
+  })
+
+  test('signTransaction(CoinType.ethereum)', () => {
+    const input = {
+      toAddress: '0x3535353535353535353535353535353535353535',
+      chainId: Buffer.from('0x01', 'hex'),
+      nonce: Buffer.from('0x09', 'hex'),
+      gasPrice: Buffer.from('0x04a817c800', 'hex'),
+      gasLimit: Buffer.from('0x5208', 'hex'),
+      amount: Buffer.from('0x0de0b6b3a7640000'),
+    }
+    setTimeout(() => {
+      wallet.handleOpenURL({
+          url: 'test://sdk_sign_result?data=ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA&id=tx_1527509558003'
+      })
+    }, 10)
+    return wallet.signTransaction(input, CoinType.ethereum).then(result => {
+      expect(result).toEqual('ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA')
+    })
+  })
 })
 
 describe('TrustCommand tests', () => {
@@ -66,6 +86,14 @@ describe('TrustCommand tests', () => {
       var url = TrustCommand.getURL(request)
       expect(url).toBe(
         'trust://sdk_get_accounts?coins.0=60&coins.1=714&app=trust-rn-example&callback=sdk_get_accounts&id=request_test'
+      )
+    })
+
+    test('get url for .signMessage', () => {
+      var request = new MessageRequest(CoinType.ethereum, 'deadbeaf', 'message_test', TestCallbackScheme)
+      var url = TrustCommand.getURL(request)
+      expect(url).toBe(
+        'trust://sdk_sign_message?coin=60&data=deadbeaf&app=trust-rn-example&callback=sdk_sign_message&id=message_test'
       )
     })
 
@@ -89,8 +117,8 @@ describe('TrustCommand tests', () => {
     })
 
     test('parse result for .signTransaction', () => {
-      var result = TrustCommand.parseURL('trust-rn-example://sdk_sign_result?coin=60&data=Cm34a4IB3YR94pAAglIIlHKLAjdyMLXfc6pOMZLom2CQ3XMShlrzEHpAAIAmoB0Yegc2ZqxtkSkXlYo_TEg4eBrjopGUj9ySxJh6JlfToGqR7yNKzV8cD_yN_jVR5YrVaTANO05X2_9HleO8htQqEgEmGiAdGHoHNmasbZEpF5WKP0xIOHga46KRlI_cksSYeiZX0yIgapHvI0rNXxwP_I3-NVHlitVpMA07Tlfb_0eV47yG1Co&id=sign_1527509748703')
-      expect(result.id).toBe('sign_1527509748703')
+      var result = TrustCommand.parseURL('trust-rn-example://sdk_sign_result?coin=60&data=Cm34a4IB3YR94pAAglIIlHKLAjdyMLXfc6pOMZLom2CQ3XMShlrzEHpAAIAmoB0Yegc2ZqxtkSkXlYo_TEg4eBrjopGUj9ySxJh6JlfToGqR7yNKzV8cD_yN_jVR5YrVaTANO05X2_9HleO8htQqEgEmGiAdGHoHNmasbZEpF5WKP0xIOHga46KRlI_cksSYeiZX0yIgapHvI0rNXxwP_I3-NVHlitVpMA07Tlfb_0eV47yG1Co&id=tx_1527509748703')
+      expect(result.id).toBe('tx_1527509748703')
       expect(result.result).toBe(
         'Cm34a4IB3YR94pAAglIIlHKLAjdyMLXfc6pOMZLom2CQ3XMShlrzEHpAAIAmoB0Yegc2ZqxtkSkXlYo_TEg4eBrjopGUj9ySxJh6JlfToGqR7yNKzV8cD_yN_jVR5YrVaTANO05X2_9HleO8htQqEgEmGiAdGHoHNmasbZEpF5WKP0xIOHga46KRlI_cksSYeiZX0yIgapHvI0rNXxwP_I3-NVHlitVpMA07Tlfb_0eV47yG1Co'
       )

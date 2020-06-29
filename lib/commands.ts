@@ -1,10 +1,11 @@
 import URL from 'url-parse'
-import { CoinType } from './wallet-core'
+import { CoinType } from './core_types'
 import { TrustError } from './errors'
 
 export enum TrustCommand {
   requestAccounts = 'sdk_get_accounts',
-  signTransaction = 'sdk_sign'
+  signTransaction = 'sdk_sign',
+  signMessage = 'sdk_sign_message'
 }
 
 /**
@@ -30,11 +31,10 @@ export namespace TrustCommand {
     error = url.query.error || TrustError.none
     if (id.startsWith('acc_')) {
       result = url.query.accounts || ''
-    } else if (id.startsWith('sign_')) {
+    } else if (id.startsWith('msg_')) {
+      result = url.query.signature || ''
+    } else if (id.startsWith('tx_')) {
       result = url.query.data || ''
-      if (result.length < 0) {
-        result = url.query.tx_hash || ''
-      }
     }
     return {id, result, error}
   }
@@ -156,6 +156,35 @@ export class TransactionRequest implements Request {
       array = array.concat(this.meta.toQuery())
     }
     array.push({k: 'send', v: `${this.send}`})
+    if(this.callbackScheme.length > 0) {
+      array.push({k: 'app', v: this.callbackScheme})
+      array.push({k: 'callback', v: this.callbackPath})
+    }
+    array.push({k: 'id', v: this.id})
+    return array
+  }
+}
+
+export class MessageRequest implements Request {
+  id: string
+  command: string = TrustCommand.signMessage
+  coin: CoinType
+  message: string
+  callbackScheme: string
+  callbackPath: string
+
+  constructor(coin: CoinType, message: string, callbackId: string, callbackScheme?: string, callbackPath?: string) {
+    this.coin = coin
+    this.message = message
+    this.callbackScheme = callbackScheme || ''
+    this.callbackPath = callbackPath || TrustCommand.signMessage
+    this.id = callbackId
+  }
+
+  toQuery(): QueryItem[] {
+    var array: QueryItem[] = []
+    array.push({k: 'coin', v: `${this.coin}`})
+    array.push({k: 'data', v: this.message})
     if(this.callbackScheme.length > 0) {
       array.push({k: 'app', v: this.callbackScheme})
       array.push({k: 'callback', v: this.callbackPath})
