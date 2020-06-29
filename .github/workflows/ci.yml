@@ -24,4 +24,3 @@ jobs:
     - run: yarn install
     - run: yarn build
     - run: yarn test
-    - run: cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js
