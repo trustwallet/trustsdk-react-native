@@ -1,12 +1,11 @@
-# react-native-trust-sdk
+# @trustwallet/rn-sdk
 
 ![CI](https://github.com/trustwallet/react-native-trust-sdk/workflows/CI/badge.svg)
-[![npm version](https://badge.fury.io/js/react-native-trust-sdk.svg)](https://badge.fury.io/js/react-native-trust-sdk)
-[![Coverage Status](https://coveralls.io/repos/github/TrustWallet/react-native-trust-sdk/badge.svg?branch=master)](https://coveralls.io/github/TrustWallet/react-native-trust-sdk?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/trustwallet/react-native-trust-sdk/badge.svg?branch=master)](https://coveralls.io/github/trustwallet/react-native-trust-sdk?branch=master)
 
-The react-native-trust-sdk lets you sign Ethereum transactions and messages with Trust Wallet so that you can bulid a react native DApp without having to worry about keys or wallets.
+@trustwallet/rn-sdk lets you sign Ethereum transactions and messages with Trust Wallet.
 
-- [react-native-trust-sdk](#react-native-trust-sdk)
+- [@trustwallet/rn-sdk](#trustwalletrn-sdk)
   - [Installation](#installation)
   - [Configuring Android](#configuring-android)
   - [Configuring iOS](#configuring-ios)
@@ -18,7 +17,7 @@ The react-native-trust-sdk lets you sign Ethereum transactions and messages with
 ## Installation
 
 ```shell
-npm i react-native-trust-sdk
+npm i @trustwallet/rn-sdk
 ```
 
 ## Configuring Android
@@ -162,4 +161,4 @@ You are welcome! Create pull requests and help to improve the package.
 
 ## License
 
-GPLv3
+MIT

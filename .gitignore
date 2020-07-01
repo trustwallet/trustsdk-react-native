@@ -208,3 +208,4 @@ lib/core_models.js
 lib/core_models.d.ts
 
 .vscode/
+.jest/

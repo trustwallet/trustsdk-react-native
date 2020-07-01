@@ -12,21 +12,22 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 14
-      - run: yarn install
-      - run: yarn test
+      - run: npm install
+      - run: npm run build
+      - run: npm test
 
   publish:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'true'
       - uses: actions/setup-node@v1
         with:
           node-version: 14
           registry-url: https://npm.pkg.github.com/
-      - run: yarn test
-      - run: yarn publish
+      - name: Publish
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${TOKEN}" >> .npmrc
+          npm publish --verbose
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}

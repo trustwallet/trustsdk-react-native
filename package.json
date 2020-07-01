@@ -1,13 +1,14 @@
 {
-  "name": "react-native-trust-sdk",
-  "version": "0.1.0",
-  "description": "The react-native-trust-sdk lets you sign Ethereum transactions and messages with Trust Wallet so that you can bulid a react native DApp without having to worry about keys or wallets.",
+  "name": "@trustwallet/rn-sdk",
+  "version": "0.2.0",
+  "description": "@trustwallet/rn-sdk lets you sign Ethereum transactions and messages with Trust Wallet",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "./build.sh",
+    "build": "rm -rf dist && mkdir dist && tsc --skipLibCheck",
+    "copy:lib": "rm -rf example/lib && mkdir example/lib && cp -R dist example/lib && cp package.json example/lib",
     "test": "jest --coverage",
-    "lint": "eslint ."
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "repository": {
     "type": "git",
@@ -26,27 +27,24 @@
   },
   "homepage": "https://github.com/trustwallet/react-native-trust-sdk#readme",
   "devDependencies": {
-    "@types/node": "^10.1.2",
+    "@react-native-community/eslint-config": "^1.0.0",
+    "@types/jest": "^23.1.0",
     "@types/react-native": "^0.55.15",
     "@types/url-parse": "^1.1.0",
-    "coveralls": "^3.0.1",
-    "escodegen": "^1.14.3",
-    "eslint": "^4.19.1",
-    "eslint-plugin-react": "^7.8.2",
-    "eslint-plugin-react-native": "^3.2.1",
-    "eslint-plugin-typescript": "^0.12.0",
-    "istanbul": "^0.4.5",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
+    "eslint": "^6.5.1",
+    "eslint-plugin-react": "^7.20.3",
     "jest": "^23.1.0",
-    "jsdoc": "^3.6.4",
-    "protobufjs": "^6.8.9",
-    "react": "^16.13.1",
+    "react": "^16.3.1",
     "react-native": "^0.55.4",
     "ts-jest": "^22.4.6",
-    "typescript": "^2.8.3",
-    "typescript-eslint-parser": "^15.0.0"
+    "typescript": "^2.8.3"
   },
   "dependencies": {
+    "@trustwallet/wallet-core": "0.0.1",
     "buffer": "^5.6.0",
+    "protobufjs": "^6.9.0",
     "url-parse": "^1.4.0"
   },
   "jest": {
@@ -59,9 +57,7 @@
       "ts",
       "tsx",
       "js",
-      "jsx",
-      "json",
-      "node"
+      "jsx"
     ],
     "modulePaths": [
       "<rootDir>"
