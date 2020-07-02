@@ -27,19 +27,22 @@
   },
   "homepage": "https://github.com/trustwallet/react-native-trust-sdk#readme",
   "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/runtime": "^7.6.2",
     "@react-native-community/eslint-config": "^1.0.0",
-    "@types/jest": "^23.1.0",
-    "@types/react-native": "^0.55.15",
+    "@types/jest": "^24.0.24",
+    "@types/react-native": "^0.62.0",
     "@types/url-parse": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
+    "babel-jest": "^24.9.0",
     "eslint": "^6.5.1",
     "eslint-plugin-react": "^7.20.3",
-    "jest": "^23.1.0",
-    "react": "^16.3.1",
-    "react-native": "^0.55.4",
-    "ts-jest": "^22.4.6",
-    "typescript": "^2.8.3"
+    "jest": "^24.9.0",
+    "metro-react-native-babel-preset": "^0.58.0",
+    "react": "16.11.0",
+    "react-native": "0.62.2",
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "@trustwallet/wallet-core": "0.0.1",
@@ -49,9 +52,6 @@
   },
   "jest": {
     "preset": "react-native",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",

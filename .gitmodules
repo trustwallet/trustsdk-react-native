@@ -1,3 +1,0 @@
-[submodule "wallet-core"]
-	path = wallet-core
-	url = git@github.com:trustwallet/wallet-core
