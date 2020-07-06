@@ -125,15 +125,13 @@ class App extends React.Component {
             <View style={styles.body}>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Request Accounts</Text>
-                <Text style={styles.sectionDescription} />
-                onPress=
-                {() => {
-                  this.requestAccount([CoinType.ethereum]);
-                }}
+                <Button 
+                  title="Ethereum" onPress={() => {
+                    this.requestAccount([CoinType.ethereum]);
+                  }} 
                 />
                 <Button
-                  title="Ethereum + Cosmos +Binance"
-                  onPress={() => {
+                  title="Ethereum + Cosmos +Binance" onPress={() => {
                     this.requestAccount([
                       CoinType.ethereum,
                       CoinType.cosmos,
@@ -144,11 +142,11 @@ class App extends React.Component {
               </View>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Sign Transactions</Text>
-                <Text style={styles.sectionDescription} />
-                title="Sign Ethereum Message" onPress=
-                {() => {
-                  this.signMessage();
-                }}
+                <Button
+                  title="Sign Ethereum Message" onPress=
+                  {() => {
+                    this.signMessage();
+                  }}
                 />
                 <Button
                   title="Sign Ethereum Tx"

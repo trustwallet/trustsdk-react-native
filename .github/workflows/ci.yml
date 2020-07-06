@@ -18,11 +18,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install and build
+    - name: npm install
       run: |
-        echo "//npm.pkg.github.com/:_authToken=${TOKEN}" >> .npmrc
-        npm install
-        npm run build
+        npm config set //npm.pkg.github.com/:_authToken=${TOKEN}
+        npm ci
       env:
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: npm run build 
     - run: npm test
