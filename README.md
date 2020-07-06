@@ -1,11 +1,10 @@
 # @trustwallet/rn-sdk
 
 ![CI](https://github.com/trustwallet/react-native-trust-sdk/workflows/CI/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/trustwallet/react-native-trust-sdk/badge.svg?branch=master)](https://coveralls.io/github/trustwallet/react-native-trust-sdk?branch=master)
 
-@trustwallet/rn-sdk lets you sign Ethereum transactions and messages with Trust Wallet.
+[@trustwallet/rn-sdk](https://github.com/trustwallet/react-native-trust-sdk/packages/301004) is Trust Wallet's react native SDK, it allows you to request accounts, sign messages and transactions.
 
-- [@trustwallet/rn-sdk](#trustwalletrn-sdk)
+- Table of Contents
   - [Installation](#installation)
   - [Configuring Android](#configuring-android)
   - [Configuring iOS](#configuring-ios)
@@ -16,15 +15,17 @@
 
 ## Installation
 
+Currently `@trustwallet/rn-sdk` is hosted on GitHub Package Registry, please read [configuring npm](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-npm-for-use-with-github-packages#installing-a-package) first (will also publish to NPM later).
+
 ```shell
-npm i @trustwallet/rn-sdk
+npm i @trustwallet/rn-sdk @trustwallet/wallet-core
 ```
 
 ## Configuring Android
 
 Make sure you have set up intent-filter for your app ([documentation here](https://developer.android.com/training/app-links/deep-linking#adding-filters))
 
-example app settings:
+The `example` app settings:
 
 ```xml
 <activity
@@ -42,7 +43,7 @@ example app settings:
 
 Make sure you have set up url scheme for your app (Open Xcode an click on your project. Go to the 'Info' tab and expand the 'URL Types' group).
 
-example app settings:
+The `example` app settings:
 
 ```xml
 <key>CFBundleURLTypes</key>
@@ -97,7 +98,7 @@ react-native run-ios
 import the package:
 
 ```typescript
-import TrustWallet, {CoinType} from 'react-native-trust-sdk'
+import TrustWallet, {CoinType} from '@trustwallet/rn-sdk'
 ```
 
 initialize an instance, e.g. in `componentDidMount`:
@@ -106,19 +107,18 @@ initialize an instance, e.g. in `componentDidMount`:
 const wallet = new TrustWallet('<your_app_scheme>://');
 ```
 
-request accounts
+request ETH/BNB accounts:
 
 ```typescript
 wallet.requestAccounts([CoinType.ethereum, CoinType.binance])
 .then((accounts) => {
   Alert.alert('Accounts', accounts.join('\n'))
 }).catch(error => {
-  console.log(error)
   Alert.alert('Error', JSON.stringify(error))
 })
 ```
 
-sign a message:
+sign an Ethereum message:
 
 ```typescript
 const message = utils.keccak256(this.ethereumMessage("Some message"))
@@ -130,7 +130,7 @@ wallet.signMessage(message, CoinType.ethereum)
 })
 ```
 
-sign a transaction:
+sign an Ethereum transaction:
 
 ```typescript
 const tx = {

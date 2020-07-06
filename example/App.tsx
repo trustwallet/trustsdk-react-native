@@ -22,7 +22,7 @@ import {
 
 import {Header, Colors} from 'react-native/Libraries/NewAppScreen';
 
-import TrustWallet, {CoinType} from './lib';
+import TrustWallet, {CoinType} from '@trustwallet/rn-sdk';
 import {Buffer} from 'buffer';
 import {utils, BigNumber} from 'ethers';
 import console from 'console';
