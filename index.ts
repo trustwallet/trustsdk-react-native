@@ -1,76 +1,52 @@
-import {Linking} from 'react-native';
-import {TrustCommand, Payload, MessagePayload, TransactionPayload} from './lib/commands';
-
-export enum TrustError {
-  // Unknown Error
-  unknown = -1,
-  // No Error occurred
-  none = 0,
-  // Error generated when the user cancells the sign request.
-  cancelled = 1,
-  // Error generated when the request is invalid.
-  invalidRequest = 2,
-  // Error generated when current wallet is watch only
-  watchOnly = 3,
-
-  // Error generated when Trust Wallet is not installed
-  notInstalled = 1000
-}
-
-export namespace TrustError {
-  export function toString(error: TrustError) {
-    switch(error) {
-      case TrustError.unknown:
-        return 'Unknown Error';
-      case TrustError.none:
-        return 'No Error';
-      case TrustError.cancelled:
-        return 'User cancelled';
-      case TrustError.invalidRequest:
-        return 'Signing request is invalid';
-      case TrustError.watchOnly:
-        return 'Wallet is watch only';
-      case TrustError.notInstalled:
-        return 'Trust Wallet is not installed';
-      default:
-        return ''
-    }
-  }
-}
+import { Linking } from "react-native";
+import { Buffer } from "buffer";
+import {
+  TrustCommand,
+  Request,
+  AccountsRequest,
+  MessageRequest,
+  TransactionRequest,
+  DAppMetadata,
+} from "./lib/commands";
+import { TrustError } from "./lib/errors";
+import { TW, CoinType } from "@trustwallet/wallet-core";
 
 class TrustWallet {
-  callbackScheme: string
+  callbackScheme: string;
+  callbackId = new Date().getTime();
   app = {
-    name: 'Trust',
-    scheme: 'trust://',
-    AppStoreURL: 'https://itunes.apple.com/us/app/trust-ethereum-wallet/id1288339409',
-    GooglePlayURL: 'https://play.google.com/store/apps/details?id=com.wallet.crypto.trustapp'
-  }
-  resolvers: {[key: string]: (value: string) => void} = {}
-  rejectors: {[key: string]: (value: Object) => void} = {}
+    name: "Trust",
+    scheme: "trust://",
+    AppStoreURL:
+      "https://itunes.apple.com/us/app/trust-ethereum-wallet/id1288339409",
+    GooglePlayURL:
+      "https://play.google.com/store/apps/details?id=com.wallet.crypto.trustapp",
+  };
+  resolvers: { [key: string]: (value: string) => void } = {};
+  rejectors: { [key: string]: (value: Object) => void } = {};
 
   /**
    * constructor
    * @param callbackScheme default callback scheme
    */
   constructor(callbackScheme: string) {
-    // Linking.getInitialURL().then((url: string) => this.handleURL(url));
-    this.callbackScheme = callbackScheme
+    // Linking.getInitialURL().then((url: string) => this.handleURL(url))
+    this.callbackScheme = callbackScheme;
     this.start();
   }
 
   /**
-   * start listening openURL event, you don't need to call it unless you explicit called cleanup
+   * start listening openURL event, you don"t need to call it unless you explicit called cleanup
    */
   public start() {
-    Linking.addEventListener('url', this.handleOpenURL.bind(this));
+    Linking.addEventListener("url", this.handleOpenURL.bind(this));
   }
 
   /**
    * stop listening openURL event and clean resolvers
    */
   public cleanup() {
-    Linking.removeEventListener('url', this.handleOpenURL.bind(this));
+    Linking.removeEventListener("url", this.handleOpenURL.bind(this));
     this.resolvers = {};
   }
 
@@ -78,80 +54,114 @@ class TrustWallet {
    * check if Trust Wallet is installed
    */
   public installed(): Promise<boolean> {
-    const testUrl = this.app.scheme + TrustCommand.signMessage; // works for iOS and Android
+    const testUrl = this.app.scheme + TrustCommand.requestAccounts; // works for iOS and Android
     return Linking.canOpenURL(testUrl);
   }
 
   /**
-   * sign a transaction
-   * @param payload transaction payload
+   * request coin addresses
+   * @param request account request
    * @returns {Promise<string>} signed transaction hash
    */
-  public signTransaction(payload: TransactionPayload): Promise<string> {
-    return this.runCommand(payload);
+  public requestAccounts(coins: CoinType[]): Promise<string[]> {
+    const request = new AccountsRequest(
+      coins,
+      this.genId("acc_"),
+      this.callbackScheme
+    );
+    return this.sendRequest(request).then((result) => {
+      return result.split(",");
+    });
   }
 
   /**
-   * sign a message
-   * @param payload message payload
-   * @returns {Promise<string>} signed message hash
+   * sign a transaction
+   * @param request message request
+   * @returns {Promise<string>} signed transaction hash
    */
-  public signMessage(payload: MessagePayload): Promise<string> {
-    return this.runCommand(payload)
+  public signMessage(message: string, coin: CoinType): Promise<string> {
+    const request = new MessageRequest(
+      coin,
+      message,
+      this.genId("msg_"),
+      this.callbackScheme
+    );
+    return this.sendRequest(request);
   }
 
   /**
-   * sign a personal message
-   * @param payload message payload
-   * @returns {Promise<string>} signed personal message hash
+   * sign a transaction
+   * @param request transaction request
+   * @returns {Promise<string>} signed transaction hash
    */
-  public signPersonalMessage(payload: MessagePayload): Promise<string> {
-    if(payload.type !== TrustCommand.signPersonalMessage) {
-      payload.type = TrustCommand.signPersonalMessage;
+  public signTransaction(
+    input: Object,
+    coin: CoinType,
+    send: boolean = false,
+    meta?: DAppMetadata
+  ): Promise<string> {
+    let data = new Uint8Array(0);
+    switch (coin) {
+      case CoinType.ethereum:
+        let proto = TW.Ethereum.Proto.SigningInput.create(input);
+        data = TW.Ethereum.Proto.SigningInput.encode(proto).finish();
+        break;
+      default:
+        throw new Error("not implemented yet");
     }
-    return this.runCommand(payload);
+    const request = new TransactionRequest(
+      coin,
+      Buffer.from(data).toString("base64"),
+      this.genId("tx_"),
+      send,
+      meta,
+      this.callbackScheme
+    );
+    return this.sendRequest(request);
   }
 
-  private runCommand(payload: Payload): Promise<string> {
-    return this.installed()
-    .then((result) => {
+  private genId(prefix?: string): string {
+    this.callbackId++;
+    return (prefix || "") + this.callbackId;
+  }
+
+  private sendRequest(request: Request): Promise<string> {
+    return this.installed().then((result) => {
       return new Promise<string>((resolve, reject) => {
         if (result) {
-          if (payload.callbackScheme.length <= 0) {
+          if (request.callbackScheme.length <= 0) {
             // set default callback scheme
-            payload.callbackScheme = this.callbackScheme;
+            request.callbackScheme = this.callbackScheme;
           }
           // tracking resolve/reject by payload id
-          this.resolvers[payload.id] = resolve;
-          this.rejectors[payload.id] = reject;
-          const url = TrustCommand.getURL(payload);
+          this.resolvers[request.id] = resolve;
+          this.rejectors[request.id] = reject;
+          const url = TrustCommand.getURL(request);
           Linking.openURL(url);
         } else {
           reject({
-            code: TrustError.notInstalled,
-            msg: TrustError.toString(TrustError.notInstalled)
+            error: TrustError.notInstalled,
+            message: TrustError.toString(TrustError.notInstalled),
           });
         }
       });
     });
   }
 
-  private handleOpenURL(event: { url: string; }) {
+  private handleOpenURL(event: { url: string }) {
     const response = TrustCommand.parseURL(event.url);
-    const errorCode = parseInt(response.error);
     const resolver = this.resolvers[response.id];
     const rejector = this.rejectors[response.id];
     if (!resolver || !rejector) {
       return;
     }
-
-    if (errorCode !== TrustError.none) {
-        rejector({
-          code: errorCode,
-          msg: TrustError.toString(errorCode)
-        });
+    if (response.error !== TrustError.none) {
+      rejector({
+        error: response.error,
+        message: TrustError.toString(response.error),
+      });
     } else {
-        resolver(response.result);
+      resolver(response.result);
     }
     delete this.resolvers[response.id];
     delete this.rejectors[response.id];
@@ -159,4 +169,12 @@ class TrustWallet {
 }
 
 export default TrustWallet;
-export {TrustCommand, MessagePayload, TransactionPayload};
+export {
+  TrustCommand,
+  AccountsRequest,
+  MessageRequest,
+  TransactionRequest,
+  CoinType,
+  TrustError,
+  DAppMetadata,
+};

@@ -3,36 +3,42 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start --config ../../../../rn-cli.config.js",
-    "test": "jest"
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "buffer": "^5.1.0",
-    "react": "16.3.1",
-    "react-native": "0.55.4",
-    "react-native-trust-sdk": "0.0.6",
-    "url-parse": "^1.4.0"
+    "@trustwallet/rn-sdk": "0.2.0",
+    "@trustwallet/wallet-core": "0.0.4",
+    "buffer": "^5.6.0",
+    "console": "^0.7.2",
+    "ethers": "^5.0.3",
+    "react": "16.11.0",
+    "react-native": "0.62.2",
+    "url-parse": "^1.4.7"
   },
   "devDependencies": {
-    "@types/jest": "22.2.3",
-    "@types/node": "^10.1.3",
-    "@types/react": "16.3.14",
-    "@types/react-native": "^0.55.15",
-    "@types/react-test-renderer": "16.0.1",
-    "babel-jest": "22.4.4",
-    "babel-preset-react-native": "4.0.0",
-    "jest": "22.4.4",
-    "react-native-typescript-transformer": "1.2.6",
-    "react-test-renderer": "16.3.1",
-    "ts-jest": "22.4.6",
-    "typescript": "2.8.3"
+    "@babel/core": "^7.6.2",
+    "@babel/runtime": "^7.6.2",
+    "@react-native-community/eslint-config": "^1.0.0",
+    "@types/jest": "^24.0.24",
+    "@types/react-native": "^0.62.0",
+    "@types/react-test-renderer": "16.9.2",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
+    "babel-jest": "^24.9.0",
+    "eslint": "^6.5.1",
+    "jest": "^24.9.0",
+    "metro-react-native-babel-preset": "^0.58.0",
+    "prettier": "^2.0.4",
+    "react-test-renderer": "16.11.0",
+    "typescript": "^3.8.3",
+    "protobufjs": "^6.9.0"
   },
   "jest": {
     "preset": "react-native",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -40,9 +46,6 @@
       "jsx",
       "json",
       "node"
-    ],
-    "modulePaths": [
-      "<rootDir>"
     ]
   }
 }

@@ -1,17 +1,18 @@
 {
-  "name": "react-native-trust-sdk",
-  "version": "0.0.6",
-  "description": "The react-native-trust-sdk lets you sign Ethereum transactions and messages with Trust Wallet so that you can bulid a react native DApp without having to worry about keys or wallets.",
+  "name": "@trustwallet/rn-sdk",
+  "version": "0.2.0",
+  "description": "@trustwallet/rn-sdk lets you sign Ethereum transactions and messages with Trust Wallet",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "./build.sh",
+    "build": "rm -rf dist && mkdir dist && tsc --skipLibCheck",
+    "copy:lib": "rm -rf example/lib && mkdir example/lib && cp -R dist example/lib && cp package.json example/lib",
     "test": "jest --coverage",
-    "lint": "eslint ."
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TrustWallet/react-native-trust-sdk.git"
+    "url": "git+https://github.com/trustwallet/react-native-trust-sdk.git"
   },
   "keywords": [
     "react-native",
@@ -22,42 +23,40 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TrustWallet/react-native-trust-sdk/issues"
+    "url": "https://github.com/trustwallet/react-native-trust-sdk/issues"
   },
-  "homepage": "https://github.com/TrustWallet/react-native-trust-sdk#readme",
+  "homepage": "https://github.com/trustwallet/react-native-trust-sdk#readme",
   "devDependencies": {
-    "@types/node": "^10.1.2",
-    "@types/react-native": "^0.55.15",
+    "@babel/core": "^7.6.2",
+    "@babel/runtime": "^7.6.2",
+    "@react-native-community/eslint-config": "^1.0.0",
+    "@types/jest": "^24.0.24",
+    "@types/react-native": "^0.62.0",
     "@types/url-parse": "^1.1.0",
-    "coveralls": "^3.0.1",
-    "eslint": "^4.19.1",
-    "eslint-plugin-react": "^7.8.2",
-    "eslint-plugin-react-native": "^3.2.1",
-    "eslint-plugin-typescript": "^0.12.0",
-    "istanbul": "^0.4.5",
-    "jest": "^23.1.0",
-    "react-native": "^0.55.4",
-    "ts-jest": "^22.4.6",
-    "typescript": "^2.8.3",
-    "typescript-eslint-parser": "^15.0.0"
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
+    "babel-jest": "^24.9.0",
+    "eslint": "^6.5.1",
+    "eslint-plugin-react": "^7.20.3",
+    "jest": "^24.9.0",
+    "metro-react-native-babel-preset": "^0.58.0",
+    "react": "16.11.0",
+    "react-native": "0.62.2",
+    "typescript": "^3.8.3"
   },
   "dependencies": {
-    "buffer": "^5.1.0",
+    "@trustwallet/wallet-core": "0.0.4",
+    "buffer": "^5.6.0",
     "url-parse": "^1.4.0"
   },
   "jest": {
     "preset": "react-native",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
       "js",
-      "jsx",
-      "json",
-      "node"
+      "jsx"
     ],
     "modulePaths": [
       "<rootDir>"
