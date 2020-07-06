@@ -5,17 +5,6 @@ on:
     types: [created]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
-
   # publish-npm:
   #   needs: build
   #   runs-on: ubuntu-latest
@@ -25,12 +14,15 @@ jobs:
   #       with:
   #         node-version: 14
   #         registry-url: https://registry.npmjs.org/
-  #     - run: npm ci
-  #     - run: npm run build
+  #     - name: npm install
+  #       run: |
+  #         npm config set //npm.pkg.github.com/:_authToken=${TOKEN}
+  #         npm ci && npm run build && npm test
+  #       env:
+  #         TOKEN: ${{ secrets.GITHUB_TOKEN }}
   #     - run: npm publish
   #       env:
   #         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-
   publish-gpr:
     needs: build
     runs-on: ubuntu-latest
@@ -40,8 +32,12 @@ jobs:
         with:
           node-version: 14
           registry-url: https://npm.pkg.github.com/
-      - run: npm ci
-      - run: npm run build
+      - name: npm install
+        run: |
+          npm config set //npm.pkg.github.com/:_authToken=${TOKEN}
+          npm ci && npm run build && npm test
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
