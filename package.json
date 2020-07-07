@@ -45,7 +45,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@trustwallet/wallet-core": "0.0.4",
+    "@trustwallet/wallet-core": "^0.0.5",
     "buffer": "^5.6.0",
     "url-parse": "^1.4.0"
   },
