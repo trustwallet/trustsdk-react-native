@@ -1,6 +1,6 @@
 {
   "name": "@trustwallet/rn-sdk",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "@trustwallet/rn-sdk lets you sign Ethereum transactions and messages with Trust Wallet",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
