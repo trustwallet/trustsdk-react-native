@@ -16,8 +16,6 @@ jobs:
       - name: npm install
         run: |
           npm ci && npm run build && npm test
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
@@ -31,7 +29,8 @@ jobs:
           registry-url: https://npm.pkg.github.com/
       - name: npm install
         run: |
-          npm config set //npm.pkg.github.com/:_authToken=${TOKEN}
+          echo "registry=https://npm.pkg.github.com/trustwallet" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${TOKEN}" >> .npmrc
           npm ci && npm run build && npm test
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
