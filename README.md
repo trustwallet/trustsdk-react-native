@@ -1,8 +1,9 @@
 # @trustwallet/rn-sdk
 
+[![npm version](https://badge.fury.io/js/%40trustwallet%2Frn-sdk.svg)](https://badge.fury.io/js/%40trustwallet%2Frn-sdk)
 ![CI](https://github.com/trustwallet/react-native-trust-sdk/workflows/CI/badge.svg)
 
-[@trustwallet/rn-sdk](https://github.com/trustwallet/react-native-trust-sdk/packages/301004) is Trust Wallet's react native SDK, it allows you to request accounts, sign messages and transactions.
+[@trustwallet/rn-sdk](https://www.npmjs.com/package/@trustwallet/rn-sdk) is Trust Wallet's react native SDK, it allows you to request accounts, sign messages and transactions.
 
 - Table of Contents
   - [Installation](#installation)
@@ -14,8 +15,6 @@
   - [License](#license)
 
 ## Installation
-
-Currently `@trustwallet/rn-sdk` is hosted on GitHub Package Registry, please read [configuring npm](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-npm-for-use-with-github-packages#installing-a-package) first (will also publish to NPM later).
 
 ```shell
 npm i @trustwallet/rn-sdk @trustwallet/wallet-core
