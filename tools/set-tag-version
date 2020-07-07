@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const fs = require('fs');
+const child_process = require('child_process');
+
+const package_json = '../package.json';
+
+const tag = child_process.execSync('git describe --long --tags | cut -f 1 -d "-"')
+                        .toString()
+                        .replace('\n', '');
+const package = require(path.resolve(__dirname, package_json));
+
+package.version = tag;
+fs.writeFileSync(path.resolve(__dirname, package_json), JSON.stringify(package, null, 2));
