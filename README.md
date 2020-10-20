@@ -147,17 +147,6 @@ wallet.signTransaction(tx, CoinType.ethereum, send, undefined, Platform.OS)
   Alert.alert('Error', JSON.stringify(error))
 })
 ```
-const input = {
-      tokenId: "0x3535353535353535353535353535353535353535",
-      toAddress: "0x3535353535353535353535353535353535353536",
-      fromAddress: "0x3535353535353535353535353535353535353537",
-      nonce: Buffer.from("0x1", "hex"),
-      gasPrice: Buffer.from("0x2", "hex"),
-      gasLimit: Buffer.from("0xff", "hex"),
-      amount: Buffer.from("0xaaaaaaaaaaaaaaaaaaaaaaaaaaaf", "hex"),
-      meta: "meta",
-      callbackHost: "tx_callback"
-    };
 
 sign an Ethereum transaction on *Android*:
 
@@ -172,6 +161,7 @@ const tx = {
   gasPrice: "2112000000"), // (Optional) You can set your custom fee price in subunit format
   gasLimit: "21000", // (Optional) You can set your custom fee limit in subunit format
   amount: "0.001" // Transaction amount in human-readable (unit) format
+  callbackHost: "tx_callback" // (Optional) host of you callback uri
 }
 wallet.signTransaction(tx, CoinType.ethereum, send, undefined, Platform.OS)
 .then(result =>{

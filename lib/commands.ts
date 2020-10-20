@@ -206,9 +206,9 @@ export class AndroidTransactionRequest implements Request {
     toAddress: string,
     amount: string,
     callbackScheme: string,
-    callbackPath: string,
     send: boolean,
     callbackId: string,
+    callbackPath?: string,
     tokenId?: string,
     fromAddress?: string,
     nonce?: string,
@@ -226,7 +226,7 @@ export class AndroidTransactionRequest implements Request {
     this.amount = amount;
     this.meta = meta || "";
     this.callbackScheme = callbackScheme;
-    this.callbackPath = callbackPath;
+    this.callbackPath = callbackPath || TrustCommand.signTransaction;
     this.id = callbackId;
     if (send) {
       this.confirmType = "send";

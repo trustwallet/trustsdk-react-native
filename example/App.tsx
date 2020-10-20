@@ -147,7 +147,7 @@ class App extends React.Component {
                   }} 
                 />
                 <Button
-                  title="Ethereum + Cosmos +Binance" onPress={() => {
+                  title="Ethereum + Cosmos + Binance" onPress={() => {
                     this.requestAccount([
                       CoinType.ethereum,
                       CoinType.cosmos,
@@ -159,19 +159,19 @@ class App extends React.Component {
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Sign Transactions</Text>
                 <Button
-                  title="Sign Ethereum Message" onPress=
+                  title="Sign Message" onPress=
                   {() => {
                     this.signMessage();
                   }}
                 />
                 <Button
-                  title="Sign Ethereum Tx"
+                  title="Sign Tx"
                   onPress={() => {
                     this.signEthereumTransaction();
                   }}
                 />
                 <Button
-                  title="Sign and Send Ethereum Tx"
+                  title="Sign and Send Tx"
                   onPress={() => {
                     this.signEthereumTransaction(true);
                   }}

@@ -10,8 +10,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "@trustwallet/rn-sdk": "0.2.0",
-    "@trustwallet/wallet-core": "0.0.4",
+    "@trustwallet/rn-sdk": "0.2.2",
+    "@trustwallet/wallet-core": "2.3.2",
     "buffer": "^5.6.0",
     "console": "^0.7.2",
     "ethers": "^5.0.3",
