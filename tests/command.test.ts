@@ -4,6 +4,7 @@ import {
   AccountsRequest,
   MessageRequest,
   TransactionRequest,
+  AndroidTransactionRequest,
   TrustError,
 } from "../dist";
 
@@ -57,6 +58,28 @@ describe("Test TrustCommand.getURL()", () => {
     const url = TrustCommand.getURL(request);
     expect(url).toBe(
       "trust://sdk_sign?coin=60&data=0xdeadbef&send=true&app=trust-rn-example&callback=sdk_sign&id=tx"
+    );
+  });
+
+  it("get url for .androidTransaction", () => {
+    const request = new AndroidTransactionRequest(
+      CoinType.ethereum,
+      "0xdeadbef",
+      "1",
+      "sampleapp://",
+      "tx_callback",
+      true,
+      "id",
+      "token",
+      undefined,
+      "1",
+      "1",
+      "1",
+      "meta"
+    );
+    const url = TrustCommand.getURL(request);
+    expect(url).toBe(
+      "trust://sdk_transaction?coin=60&to=0xdeadbef&meta=meta&token_id=token&nonce=1&fee_price=1&fee_limit=1&amount=1&action=transfer&confirm_type=send&callback=sampleapp://tx_callback&id=id"
     );
   });
 });

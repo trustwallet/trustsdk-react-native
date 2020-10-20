@@ -129,7 +129,7 @@ wallet.signMessage(message, CoinType.ethereum)
 })
 ```
 
-sign an Ethereum transaction:
+sign an Ethereum transaction on *iOS*:
 
 ```typescript
 const tx = {
@@ -140,14 +140,46 @@ const tx = {
   gasLimit: this.serializeBigInt('21000'),
   amount: this.serializeBigInt('100000000000000')
 }
-wallet.signTransaction(tx, CoinType.ethereum, send)
+wallet.signTransaction(tx, CoinType.ethereum, send, undefined, Platform.OS)
 .then(result =>{
   Alert.alert('Transaction', result)
 }).catch(error => {
   Alert.alert('Error', JSON.stringify(error))
 })
 ```
+const input = {
+      tokenId: "0x3535353535353535353535353535353535353535",
+      toAddress: "0x3535353535353535353535353535353535353536",
+      fromAddress: "0x3535353535353535353535353535353535353537",
+      nonce: Buffer.from("0x1", "hex"),
+      gasPrice: Buffer.from("0x2", "hex"),
+      gasLimit: Buffer.from("0xff", "hex"),
+      amount: Buffer.from("0xaaaaaaaaaaaaaaaaaaaaaaaaaaaf", "hex"),
+      meta: "meta",
+      callbackHost: "tx_callback"
+    };
 
+sign an Ethereum transaction on *Android*:
+
+```typescript
+const tx = {
+  toAddress: '0x1b38BC1D3a7B2a370425f70CedaCa8119ac24576', // Recipient address
+  tokenId: '0x6B175474E89094C44Da98b954EedeAC495271d0F', // token (optional), following standard of unique identifier on the blockhain as smart contract address or asset ID
+  fromAddress: '0xF36f148D6FdEaCD6c765F8f59D4074109E311f0c', // (Optional) "From" address parameter specifies a wallet which contains given account
+  meta: '0xa9059cbb0000000000000000000000000F36f148D6FdEaCD6c765F8f59D4074109E311f0c0000000000000000000000000000000000000000000000000000000000000001', // (Optional) Transaction data in hex format, Memo or Destination tag
+  toAddress: '0x728B02377230b5df73Aa4E3192E89b6090DD7312',
+  nonce: "447", // (Optional) You can set your custom nonce or sequence
+  gasPrice: "2112000000"), // (Optional) You can set your custom fee price in subunit format
+  gasLimit: "21000", // (Optional) You can set your custom fee limit in subunit format
+  amount: "0.001" // Transaction amount in human-readable (unit) format
+}
+wallet.signTransaction(tx, CoinType.ethereum, send, undefined, Platform.OS)
+.then(result =>{
+  Alert.alert('Transaction', result)
+}).catch(error => {
+  Alert.alert('Error', JSON.stringify(error))
+})
+```
 clean up all resolve handlers, e.g. in`componentWillUnmount`:
 
 ```typescript

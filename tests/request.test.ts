@@ -3,6 +3,7 @@ import {
   TrustCommand,
   AccountsRequest,
   TransactionRequest,
+  AndroidTransactionRequest,
   DAppMetadata,
 } from "../dist";
 
@@ -55,6 +56,50 @@ describe("Test TransactionRequest.toQuery()", () => {
     let query = TrustCommand.processQuery(request.toQuery());
     expect(query).toBe(
       "coin=60&data=ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA&meta.__name=dApp&meta.name=Test&meta.url=https://dapptest.com&send=false&app=trust-rn-example&callback=sdk_sign_result&id=sign_1527496572770"
+    );
+  });
+});
+describe("Test TransactionRequest.toQuery()", () => {
+  const sign_id = "sign_" + timestamp;
+  const data =
+    "ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA";
+  const meta = new DAppMetadata("Test", "https://dapptest.com");
+  it("coin + data + callback scheme", () => {
+    const request = new TransactionRequest(
+      CoinType.ethereum,
+      data,
+      sign_id,
+      false,
+      meta,
+      TestCallbackScheme,
+      "sdk_sign_result"
+    );
+    let query = TrustCommand.processQuery(request.toQuery());
+    expect(query).toBe(
+      "coin=60&data=ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA&meta.__name=dApp&meta.name=Test&meta.url=https://dapptest.com&send=false&app=trust-rn-example&callback=sdk_sign_result&id=sign_1527496572770"
+    );
+  });
+});
+
+describe("Test AndroidTransactionRequest.toQuery()", () => {
+  it("get url for .androidTransaction", () => {
+    const request = new AndroidTransactionRequest(
+      CoinType.ethereum,
+      "0xdeadbef",
+      "1",
+      "sampleapp://",
+      "tx_callback",
+      true,
+      "token",
+      undefined,
+      "1",
+      "1",
+      "1",
+      "meta"
+    );
+    const url = TrustCommand.processQuery(request.toQuery());
+    expect(url).toBe(
+      "coin=60&to=0xdeadbef&meta=&nonce=1&fee_price=1&fee_limit=meta&from=1&amount=1&action=transfer&confirm_type=send&callback=sampleapp://tx_callback&id=token"
     );
   });
 });

@@ -90,22 +90,38 @@ class App extends React.Component {
 
   signEthereumTransaction(send: boolean = false) {
     console.log('signTransaction send: ' + send);
-    const tx = {
-      toAddress: '0x728B02377230b5df73Aa4E3192E89b6090DD7312',
-      chainId: Buffer.from('0x01', 'hex'),
-      nonce: this.serializeBigInt('447'),
-      gasPrice: this.serializeBigInt('2112000000'),
-      gasLimit: this.serializeBigInt('21000'),
-      amount: this.serializeBigInt('100000000000000'),
-    };
-    this.wallet
-      ?.signTransaction(tx, CoinType.ethereum, send)
+    
+    if (Platform.OS == "android") {
+      const tx = {
+        toAddress: 'bnb1sh6nuztt3dcevy4ngmztkpapnvxqy7je0t0udr',
+        amount: "0.00001", // amount in human readable format (units)
+      }
+      this.wallet
+      ?.signTransaction(tx, CoinType.binance, send, undefined, Platform.OS)
       .then((result) => {
         Alert.alert('Transaction', result);
       })
       .catch((error) => {
         Alert.alert('Error', JSON.stringify(error));
       });
+    } else {
+      const tx = {
+        toAddress: '0x728B02377230b5df73Aa4E3192E89b6090DD7312',
+        chainId: Buffer.from('0x01', 'hex'),
+        nonce: this.serializeBigInt('447'),
+        gasPrice: this.serializeBigInt('2112000000'),
+        gasLimit: this.serializeBigInt('21000'),
+        amount: this.serializeBigInt('10000'),
+      }
+      this.wallet
+      ?.signTransaction(tx, CoinType.ethereum, send, undefined, Platform.OS)
+      .then((result) => {
+        Alert.alert('Transaction', result);
+      })
+      .catch((error) => {
+        Alert.alert('Error', JSON.stringify(error));
+      });
+    }
   }
 
   render() {

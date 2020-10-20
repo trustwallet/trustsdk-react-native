@@ -6,6 +6,7 @@ import {
   AccountsRequest,
   MessageRequest,
   TransactionRequest,
+  AndroidTransactionRequest,
   DAppMetadata,
 } from "./lib/commands";
 import { TrustError } from "./lib/errors";
@@ -98,6 +99,20 @@ class TrustWallet {
     input: Object,
     coin: CoinType,
     send: boolean = false,
+    meta?: DAppMetadata,
+    platform?: string
+  ): Promise<string> {
+    if (platform === "android") {
+      return this.signAndroidTransaction(coin, input, send);
+    } else {
+      return this.signIOSTransaction(input, coin, send, meta);
+    }
+  }
+
+  private signIOSTransaction(
+    input: Object,
+    coin: CoinType,
+    send: boolean = false,
     meta?: DAppMetadata
   ): Promise<string> {
     let data = new Uint8Array(0);
@@ -116,6 +131,40 @@ class TrustWallet {
       send,
       meta,
       this.callbackScheme
+    );
+    return this.sendRequest(request);
+  }
+
+  private signAndroidTransaction(
+    coin: CoinType,
+    input: Object,
+    send: boolean
+  ): Promise<string> {
+    const object = input as {
+      amount: string;
+      toAddress: string;
+      callbackHost: string;
+      tokenId?: string;
+      fromAddress?: string;
+      nonce?: string;
+      gasPrice?: string;
+      gasLimit?: string;
+      meta?: string;
+    };
+    const request = new AndroidTransactionRequest(
+      coin.toString(),
+      object["toAddress"],
+      object["amount"],
+      this.callbackScheme,
+      object["callbackHost"],
+      send,
+      this.genId("tx_"),
+      object["tokenId"],
+      object["fromAddress"],
+      object["nonce"],
+      object["gasPrice"],
+      object["gasLimit"],
+      object["meta"]
     );
     return this.sendRequest(request);
   }
@@ -174,6 +223,7 @@ export {
   AccountsRequest,
   MessageRequest,
   TransactionRequest,
+  AndroidTransactionRequest,
   CoinType,
   TrustError,
   DAppMetadata,
