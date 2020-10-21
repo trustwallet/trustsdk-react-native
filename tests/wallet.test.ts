@@ -90,19 +90,20 @@ describe("Test TrustWallet class", () => {
   });
   it("signTransaction(CoinType.ethereum, input, true, undefined, \"android\")", () => {
     const input = {
-      tokenId: "0x3535353535353535353535353535353535353535",
-      toAddress: "0x3535353535353535353535353535353535353536",
-      fromAddress: "0x3535353535353535353535353535353535353537",
-      amount: "0.1",
-      callbackHost: "tx_callback"
+      toAddress: "0x3535353535353535353535353535353535353535",
+      chainId: Buffer.from("0x01", "hex"),
+      nonce: Buffer.from("0x09", "hex"),
+      gasPrice: Buffer.from("0x04a817c800", "hex"),
+      gasLimit: Buffer.from("0x5208", "hex"),
+      amount: Buffer.from("0x0de0b6b3a7640000"),
     };
     setTimeout(() => {
       wallet["handleOpenURL"]({
         url:
-          "test://tx_callback?data=ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA&id=tx_1527509558004",
+          "test://tx_callback?transaction_sign=ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA&id=tx_1527509558004",
       });
     }, 10);
-    return wallet.signTransaction(input, CoinType.ethereum, true, undefined, "android").then((result) => {
+    return wallet.signTransaction(input, CoinType.ethereum, true, undefined).then((result) => {
       expect(result).toEqual(
         "ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA"
       );

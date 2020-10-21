@@ -37,7 +37,7 @@ export namespace TrustCommand {
     } else if (id.startsWith("msg_")) {
       result = url.query.signature || "";
     } else if (id.startsWith("tx_")) {
-      result = url.query.data || "";
+      result = url.query.data || url.query.transaction_hash || url.query.transaction_sign || "";
     }
     return { id, result, error };
   }
@@ -187,9 +187,7 @@ export class TransactionRequest implements Request {
 
 export class AndroidTransactionRequest implements Request {
   coin: string;
-  tokenId?: string;
   toAddress: string;
-  fromAddress?: string;
   nonce?: string;
   gasPrice?: string;
   gasLimit?: string;
@@ -208,25 +206,20 @@ export class AndroidTransactionRequest implements Request {
     callbackScheme: string,
     send: boolean,
     callbackId: string,
-    callbackPath?: string,
-    tokenId?: string,
-    fromAddress?: string,
     nonce?: string,
     gasPrice?: string,
     gasLimit?: string,
     meta?: string
   ) {
     this.coin = coin;
-    this.tokenId = tokenId;
     this.toAddress = toAddress;
-    this.fromAddress = fromAddress;
     this.nonce = nonce;
     this.gasPrice = gasPrice;
     this.gasLimit = gasLimit;
     this.amount = amount;
     this.meta = meta || "";
     this.callbackScheme = callbackScheme;
-    this.callbackPath = callbackPath || TrustCommand.signTransaction;
+    this.callbackPath = TrustCommand.signTransaction;
     this.id = callbackId;
     if (send) {
       this.confirmType = "send";
@@ -237,12 +230,9 @@ export class AndroidTransactionRequest implements Request {
 
   toQuery(): QueryItem[] {
     var array: QueryItem[] = [];
-    array.push({ k: "coin", v: this.coin });
+    array.push({ k: "asset", v: 'c' + this.coin });
     array.push({ k: "to", v: this.toAddress });
     array.push({ k: "meta", v: this.meta });
-    if (this.tokenId) {
-      array.push({ k: "token_id", v: this.tokenId });
-    }
     if (this.nonce) {
       array.push({ k: "nonce", v: this.nonce });
     }
@@ -252,10 +242,7 @@ export class AndroidTransactionRequest implements Request {
     if (this.gasLimit) {
       array.push({ k: "fee_limit", v: this.gasLimit });
     }
-    if (this.fromAddress) {
-      array.push({ k: "from", v: this.fromAddress });
-    }
-    array.push({ k: "amount", v: this.amount });
+    array.push({ k: "wei_amount", v: this.amount });
     array.push({ k: "action", v: "transfer" });
     array.push({ k: "confirm_type", v: this.confirmType });
     array.push({ k: "callback", v: this.callbackScheme + this.callbackPath });

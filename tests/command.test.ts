@@ -69,9 +69,6 @@ describe("Test TrustCommand.getURL()", () => {
       "sampleapp://",
       true,
       "id",
-      "tx_callback",
-      "token",
-      undefined,
       "1",
       "1",
       "1",
@@ -79,7 +76,7 @@ describe("Test TrustCommand.getURL()", () => {
     );
     const url = TrustCommand.getURL(request);
     expect(url).toBe(
-      "trust://sdk_transaction?coin=60&to=0xdeadbef&meta=meta&token_id=token&nonce=1&fee_price=1&fee_limit=1&amount=1&action=transfer&confirm_type=send&callback=sampleapp://tx_callback&id=id"
+      "trust://sdk_transaction?asset=c60&to=0xdeadbef&meta=meta&nonce=1&fee_price=1&fee_limit=1&wei_amount=1&action=transfer&confirm_type=send&callback=sampleapp://sdk_sign&id=id"
     );
   });
 });

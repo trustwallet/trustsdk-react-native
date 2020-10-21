@@ -90,9 +90,6 @@ describe("Test AndroidTransactionRequest.toQuery()", () => {
       "sampleapp://",
       true,
       "id",
-      "tx_callback",
-      "token",
-      undefined,
       "1",
       "1",
       "1",
@@ -100,7 +97,7 @@ describe("Test AndroidTransactionRequest.toQuery()", () => {
     );
     const url = TrustCommand.processQuery(request.toQuery());
     expect(url).toBe(
-      "coin=60&to=0xdeadbef&meta=meta&token_id=token&nonce=1&fee_price=1&fee_limit=1&amount=1&action=transfer&confirm_type=send&callback=sampleapp://tx_callback&id=id"
+      "asset=c60&to=0xdeadbef&meta=meta&nonce=1&fee_price=1&fee_limit=1&wei_amount=1&action=transfer&confirm_type=send&callback=sampleapp://sdk_sign&id=id"
     );
   });
 });

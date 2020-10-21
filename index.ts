@@ -11,6 +11,7 @@ import {
 } from "./lib/commands";
 import { TrustError } from "./lib/errors";
 import { TW, CoinType } from "@trustwallet/wallet-core";
+import {utils, BigNumber} from 'ethers';
 
 class TrustWallet {
   callbackScheme: string;
@@ -141,32 +142,41 @@ class TrustWallet {
     send: boolean
   ): Promise<string> {
     const object = input as {
-      amount: string;
+      amount: Buffer;
       toAddress: string;
-      callbackHost: string;
-      tokenId?: string;
-      fromAddress?: string;
-      nonce?: string;
-      gasPrice?: string;
-      gasLimit?: string;
-      meta?: string;
+      nonce?: Buffer;
+      gasPrice?: Buffer;
+      gasLimit?: Buffer;
+      payload?: Buffer;
+      chainId?: Buffer;
     };
-    const request = new AndroidTransactionRequest(
-      coin.toString(),
-      object["toAddress"],
-      object["amount"],
-      this.callbackScheme,
-      send,
-      this.genId("tx_"),
-      object["callbackHost"],
-      object["tokenId"],
-      object["fromAddress"],
-      object["nonce"],
-      object["gasPrice"],
-      object["gasLimit"],
-      object["meta"]
-    );
-    return this.sendRequest(request);
+    switch (coin) {
+      case CoinType.ethereum:
+        const request = new AndroidTransactionRequest(
+          coin.toString(),
+          object["toAddress"],
+          this.deserializeBigInt(object["amount"]) || "0",
+          this.callbackScheme,
+          send,
+          this.genId("tx_"),
+          this.deserializeBigInt(object["nonce"]),
+          this.deserializeBigInt(object["gasPrice"]),
+          this.deserializeBigInt(object["gasLimit"]),
+          (object["payload"] || '').toString('hex')
+        );
+        return this.sendRequest(request);
+        break;
+      default:
+        throw new Error("not implemented yet");
+    }
+  }
+
+  private deserializeBigInt(value?: Buffer): string | undefined {
+    if (value) {
+      return BigNumber.from('0x' + value.toString('hex')).toString();
+    } else {
+      return undefined;
+    }
   }
 
   private genId(prefix?: string): string {
