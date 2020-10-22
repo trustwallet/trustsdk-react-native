@@ -87,10 +87,20 @@ Checkout the example typescript project in `example` folder.
 git clone git@github.com:TrustWallet/react-native-trust-sdk.git
 cd react-native-trust-sdk/example
 npm install && npm start
-react-native run-ios
 ```
 
-![demo gif](https://user-images.githubusercontent.com/360470/86009121-669bf880-ba4c-11ea-8bb7-3c2d8a139a68.gif)
+Run iOS
+```shell
+react-native run-ios
+```
+Run Android
+```shell
+react-native run-android
+```
+
+iOS demo|Android tx demo
+-|-
+![demo ios gif](https://user-images.githubusercontent.com/360470/86009121-669bf880-ba4c-11ea-8bb7-3c2d8a139a68.gif)|![demo android gif](docs/android_tx.gif)
 
 ## Usage
 
