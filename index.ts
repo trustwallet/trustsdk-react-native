@@ -153,7 +153,7 @@ class TrustWallet {
           this.deserializeBigInt(proto.nonce),
           this.deserializeBigInt(proto.gasPrice),
           this.deserializeBigInt(proto.gasLimit),
-          Buffer.from(proto.payload).toString("hex")
+          '0x' + Buffer.from(proto.payload).toString("hex")
         );
         return this.sendRequest(request);
       default:
