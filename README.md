@@ -132,6 +132,7 @@ wallet.signMessage(message, CoinType.ethereum)
 sign an Ethereum transaction:
 
 ```typescript
+// tx should comply TW.Ethereum.Proto.ISigningInput from @trustwallet/wallet-core
 const tx = {
   toAddress: '0x728B02377230b5df73Aa4E3192E89b6090DD7312',
   chainId: Buffer.from('0x01', 'hex'),

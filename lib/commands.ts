@@ -6,6 +6,7 @@ export enum TrustCommand {
   requestAccounts = "sdk_get_accounts",
   signTransaction = "sdk_sign",
   signMessage = "sdk_sign_message",
+  androidTransaction = "sdk_transaction",
 }
 
 /**
@@ -36,7 +37,7 @@ export namespace TrustCommand {
     } else if (id.startsWith("msg_")) {
       result = url.query.signature || "";
     } else if (id.startsWith("tx_")) {
-      result = url.query.data || "";
+      result = url.query.data || url.query.transaction_hash || url.query.transaction_sign || "";
     }
     return { id, result, error };
   }
@@ -179,6 +180,72 @@ export class TransactionRequest implements Request {
       array.push({ k: "app", v: this.callbackScheme });
       array.push({ k: "callback", v: this.callbackPath });
     }
+    array.push({ k: "id", v: this.id });
+    return array;
+  }
+}
+
+export class AndroidTransactionRequest implements Request {
+  coin: string;
+  toAddress: string;
+  nonce?: string;
+  gasPrice?: string;
+  gasLimit?: string;
+  amount: string;
+  meta: string;
+  id: string = "0";
+  command: string = TrustCommand.androidTransaction;
+  callbackScheme: string;
+  callbackPath: string;
+  confirmType: string;
+
+  constructor(
+    coin: string,
+    toAddress: string,
+    amount: string,
+    callbackScheme: string,
+    send: boolean,
+    callbackId: string,
+    nonce?: string,
+    gasPrice?: string,
+    gasLimit?: string,
+    meta?: string
+  ) {
+    this.coin = coin;
+    this.toAddress = toAddress;
+    this.nonce = nonce;
+    this.gasPrice = gasPrice;
+    this.gasLimit = gasLimit;
+    this.amount = amount;
+    this.meta = meta || "";
+    this.callbackScheme = callbackScheme;
+    this.callbackPath = TrustCommand.signTransaction;
+    this.id = callbackId;
+    if (send) {
+      this.confirmType = "send";
+    } else {
+      this.confirmType = "sign";
+    }
+  }
+
+  toQuery(): QueryItem[] {
+    var array: QueryItem[] = [];
+    array.push({ k: "asset", v: 'c' + this.coin });
+    array.push({ k: "to", v: this.toAddress });
+    array.push({ k: "meta", v: this.meta });
+    if (this.nonce) {
+      array.push({ k: "nonce", v: this.nonce });
+    }
+    if (this.gasPrice) {
+      array.push({ k: "fee_price", v: this.gasPrice });
+    }
+    if (this.gasLimit) {
+      array.push({ k: "fee_limit", v: this.gasLimit });
+    }
+    array.push({ k: "wei_amount", v: this.amount });
+    array.push({ k: "action", v: "transfer" });
+    array.push({ k: "confirm_type", v: this.confirmType });
+    array.push({ k: "callback", v: this.callbackScheme + this.callbackPath });
     array.push({ k: "id", v: this.id });
     return array;
   }

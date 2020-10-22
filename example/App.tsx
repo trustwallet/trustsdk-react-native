@@ -90,22 +90,23 @@ class App extends React.Component {
 
   signEthereumTransaction(send: boolean = false) {
     console.log('signTransaction send: ' + send);
+
     const tx = {
       toAddress: '0x728B02377230b5df73Aa4E3192E89b6090DD7312',
       chainId: Buffer.from('0x01', 'hex'),
       nonce: this.serializeBigInt('447'),
       gasPrice: this.serializeBigInt('2112000000'),
       gasLimit: this.serializeBigInt('21000'),
-      amount: this.serializeBigInt('100000000000000'),
-    };
-    this.wallet
-      ?.signTransaction(tx, CoinType.ethereum, send)
-      .then((result) => {
-        Alert.alert('Transaction', result);
-      })
-      .catch((error) => {
-        Alert.alert('Error', JSON.stringify(error));
-      });
+      amount: this.serializeBigInt('10000'),
+      payload: Buffer.from("a9059cbb0000000000000000000000000F36f148D6FdEaCD6c765F8f59D4074109E311f0c0000000000000000000000000000000000000000000000000000000000000001", 'hex')
+    }
+    this.wallet?.signTransaction(tx, CoinType.ethereum, send)
+    .then((result) => {
+      Alert.alert('Transaction', result);
+    })
+    .catch((error) => {
+      Alert.alert('Error', JSON.stringify(error));
+    });
   }
 
   render() {
@@ -131,7 +132,7 @@ class App extends React.Component {
                   }} 
                 />
                 <Button
-                  title="Ethereum + Cosmos +Binance" onPress={() => {
+                  title="Ethereum + Cosmos + Binance" onPress={() => {
                     this.requestAccount([
                       CoinType.ethereum,
                       CoinType.cosmos,

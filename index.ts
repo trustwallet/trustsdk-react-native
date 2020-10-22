@@ -1,4 +1,4 @@
-import { Linking } from "react-native";
+import { Linking, Platform } from "react-native";
 import { Buffer } from "buffer";
 import {
   TrustCommand,
@@ -6,10 +6,12 @@ import {
   AccountsRequest,
   MessageRequest,
   TransactionRequest,
+  AndroidTransactionRequest,
   DAppMetadata,
 } from "./lib/commands";
 import { TrustError } from "./lib/errors";
 import { TW, CoinType } from "@trustwallet/wallet-core";
+import { BigNumber } from 'ethers';
 
 class TrustWallet {
   callbackScheme: string;
@@ -100,6 +102,19 @@ class TrustWallet {
     send: boolean = false,
     meta?: DAppMetadata
   ): Promise<string> {
+    if (Platform.OS === "android") {
+      return this.signAndroidTransaction(input, coin, send);
+    } else {
+      return this.signIOSTransaction(input, coin, send, meta);
+    }
+  }
+
+  private signIOSTransaction(
+    input: Object,
+    coin: CoinType,
+    send: boolean = false,
+    meta?: DAppMetadata
+  ): Promise<string> {
     let data = new Uint8Array(0);
     switch (coin) {
       case CoinType.ethereum:
@@ -118,6 +133,39 @@ class TrustWallet {
       this.callbackScheme
     );
     return this.sendRequest(request);
+  }
+
+  private signAndroidTransaction(
+    input: Object,
+    coin: CoinType,
+    send: boolean
+  ): Promise<string> {
+    let proto = TW.Ethereum.Proto.SigningInput.create(input);
+    switch (coin) {
+      case CoinType.ethereum:
+        const request = new AndroidTransactionRequest(
+          coin.toString(),
+          proto.toAddress,
+          this.deserializeBigInt(proto.amount) || "0",
+          this.callbackScheme,
+          send,
+          this.genId("tx_"),
+          this.deserializeBigInt(proto.nonce),
+          this.deserializeBigInt(proto.gasPrice),
+          this.deserializeBigInt(proto.gasLimit),
+          '0x' + Buffer.from(proto.payload).toString("hex")
+        );
+        return this.sendRequest(request);
+      default:
+        throw new Error("not implemented yet");
+    }
+  }
+
+  private deserializeBigInt(value?: Uint8Array): string | undefined {
+    if (!value || value.length === 0) {
+      return undefined;
+    }
+    return BigNumber.from(value).toString();
   }
 
   private genId(prefix?: string): string {
@@ -174,6 +222,7 @@ export {
   AccountsRequest,
   MessageRequest,
   TransactionRequest,
+  AndroidTransactionRequest,
   CoinType,
   TrustError,
   DAppMetadata,
