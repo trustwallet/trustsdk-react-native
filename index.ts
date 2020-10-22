@@ -1,4 +1,4 @@
-import { Linking } from "react-native";
+import { Linking, Platform } from "react-native";
 import { Buffer } from "buffer";
 import {
   TrustCommand,
@@ -11,7 +11,7 @@ import {
 } from "./lib/commands";
 import { TrustError } from "./lib/errors";
 import { TW, CoinType } from "@trustwallet/wallet-core";
-import {utils, BigNumber} from 'ethers';
+import { BigNumber } from 'ethers';
 
 class TrustWallet {
   callbackScheme: string;
@@ -100,11 +100,10 @@ class TrustWallet {
     input: Object,
     coin: CoinType,
     send: boolean = false,
-    meta?: DAppMetadata,
-    platform?: string
+    meta?: DAppMetadata
   ): Promise<string> {
-    if (platform === "android") {
-      return this.signAndroidTransaction(coin, input, send);
+    if (Platform.OS === "android") {
+      return this.signAndroidTransaction(input, coin, send);
     } else {
       return this.signIOSTransaction(input, coin, send, meta);
     }
@@ -137,46 +136,36 @@ class TrustWallet {
   }
 
   private signAndroidTransaction(
-    coin: CoinType,
     input: Object,
+    coin: CoinType,
     send: boolean
   ): Promise<string> {
-    const object = input as {
-      amount: Buffer;
-      toAddress: string;
-      nonce?: Buffer;
-      gasPrice?: Buffer;
-      gasLimit?: Buffer;
-      payload?: Buffer;
-      chainId?: Buffer;
-    };
+    let proto = TW.Ethereum.Proto.SigningInput.create(input);
     switch (coin) {
       case CoinType.ethereum:
         const request = new AndroidTransactionRequest(
           coin.toString(),
-          object["toAddress"],
-          this.deserializeBigInt(object["amount"]) || "0",
+          proto.toAddress,
+          this.deserializeBigInt(proto.amount) || "0",
           this.callbackScheme,
           send,
           this.genId("tx_"),
-          this.deserializeBigInt(object["nonce"]),
-          this.deserializeBigInt(object["gasPrice"]),
-          this.deserializeBigInt(object["gasLimit"]),
-          (object["payload"] || '').toString('hex')
+          this.deserializeBigInt(proto.nonce),
+          this.deserializeBigInt(proto.gasPrice),
+          this.deserializeBigInt(proto.gasLimit),
+          Buffer.from(proto.payload).toString("hex")
         );
         return this.sendRequest(request);
-        break;
       default:
         throw new Error("not implemented yet");
     }
   }
 
-  private deserializeBigInt(value?: Buffer): string | undefined {
-    if (value) {
-      return BigNumber.from('0x' + value.toString('hex')).toString();
-    } else {
+  private deserializeBigInt(value?: Uint8Array): string | undefined {
+    if (!value || value.length === 0) {
       return undefined;
     }
+    return BigNumber.from(value).toString();
   }
 
   private genId(prefix?: string): string {

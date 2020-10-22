@@ -101,7 +101,7 @@ class App extends React.Component {
         payload: Buffer.from("a9059cbb0000000000000000000000000F36f148D6FdEaCD6c765F8f59D4074109E311f0c0000000000000000000000000000000000000000000000000000000000000001", 'hex')
     }
     this.wallet
-    ?.signTransaction(tx, CoinType.ethereum, send, undefined, Platform.OS)
+    ?.signTransaction(tx, CoinType.ethereum, send)
     .then((result) => {
       Alert.alert('Transaction', result);
     })
@@ -145,19 +145,19 @@ class App extends React.Component {
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Sign Transactions</Text>
                 <Button
-                  title="Sign Message" onPress=
+                  title="Sign Ethereum Message" onPress=
                   {() => {
                     this.signMessage();
                   }}
                 />
                 <Button
-                  title="Sign Tx"
+                  title="Sign Ethereum Tx"
                   onPress={() => {
                     this.signEthereumTransaction();
                   }}
                 />
                 <Button
-                  title="Sign and Send Tx"
+                  title="Sign and Send Ethereum Tx"
                   onPress={() => {
                     this.signEthereumTransaction(true);
                   }}

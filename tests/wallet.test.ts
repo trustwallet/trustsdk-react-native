@@ -67,7 +67,7 @@ describe("Test TrustWallet class", () => {
       });
   });
 
-  it("signTransaction(CoinType.ethereum)", () => {
+  it("signIOSTransaction(CoinType.ethereum)", () => {
     const input = {
       toAddress: "0x3535353535353535353535353535353535353535",
       chainId: Buffer.from("0x01", "hex"),
@@ -82,13 +82,13 @@ describe("Test TrustWallet class", () => {
           "test://sdk_sign_result?data=ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA&id=tx_1527509558003",
       });
     }, 10);
-    return wallet.signTransaction(input, CoinType.ethereum).then((result) => {
+    return wallet["signIOSTransaction"](input, CoinType.ethereum).then((result) => {
       expect(result).toEqual(
         "ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA"
       );
     });
   });
-  it("signTransaction(CoinType.ethereum, input, true, undefined, \"android\")", () => {
+  it("signAndroidTransaction(input, CoinType.ethereum, true)", () => {
     const input = {
       toAddress: "0x3535353535353535353535353535353535353535",
       chainId: Buffer.from("0x01", "hex"),
@@ -103,7 +103,7 @@ describe("Test TrustWallet class", () => {
           "test://tx_callback?transaction_sign=ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA&id=tx_1527509558004",
       });
     }, 10);
-    return wallet.signTransaction(input, CoinType.ethereum, true, undefined).then((result) => {
+    return wallet["signAndroidTransaction"](input, CoinType.ethereum, true).then((result) => {
       expect(result).toEqual(
         "ChQAAAAAAAAAAAAAAAAAAAAAAAAAARIUAAAAAAAAAAAAAAAAAAAAAAAAAd0aFAAAAAAAAAAAAAAAAAAAAAB94pAAIhQAAAAAAAAAAAAAAAAAAAAAAABSCCoqMHg3MjhCMDIzNzcyMzBiNWRmNzNBYTRFMzE5MkU4OWI2MDkwREQ3MzEyMhQAAAAAAAAAAAAAAAAAAFrzEHpAAA"
       );
